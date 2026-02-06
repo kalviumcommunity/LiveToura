@@ -1,0 +1,27 @@
+# Ignore files for various build tools
+.gradle/
+.dart_tool/
+.flutter-plugins
+.flutter-plugins-dependencies
+.web/
+.windows/
+.macos/
+.linux/
+
+# IntelliJ
+*.iml
+*.iws
+*.ipr
+.idea/
+
+# VS Code
+.vscode/
+*.swp
+*.swo
+
+# Misc
+*.class
+*.log
+*.lock
+build/
+coverage/
