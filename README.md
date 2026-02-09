@@ -377,7 +377,7 @@ In LiveToura, similar reactive patterns will handle:
 5. ⏳ Record 3-5 minute video walkthrough of Counter App
 6. ⏳ Deploy first version of LiveToura app
 
----
+
 
 ## Video Explanation Checklist
 
