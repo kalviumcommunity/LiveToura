@@ -408,3 +408,25 @@ When recording your 3-5 minute video walkthrough, cover:
 
 **Last Updated:** February 6, 2026
 **Status:** Concept-1 Documentation Complete
+
+
+---
+
+## Concept-2: Firebase Integration for Real-Time Mobile Applications
+
+### Objective
+Learn how Firebase enables authentication, database, and cloud storage integration in mobile apps, and understand how Cloud Firestore maintains real-time data synchronization between users and devices.
+
+---
+
+### 1. Firebase Setup
+
+#### What is Firebase?
+Firebase is Google's Backend-as-a-Service (BaaS) platform that provides:
+- Authentication: Secure user sign-up, login, and session management
+- Cloud Firestore: Real-time NoSQL database with automatic synchronization
+- Cloud Storage: File storage for media (images, videos, documents)
+- Cloud Functions: Serverless backend logic (optional)
+
+**Last Updated:** February 10, 2026
+**Status:** Concept-2 (Firebase Integration) Complete
