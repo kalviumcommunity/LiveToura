@@ -1,8 +1,8 @@
-# LiveToura - Real-Time Community Sports Tournament Tracking App
+# Tournament Tracker - Live Community Sports Scoring App
 
 ## Project Description
 
-LiveToura is a real-time community sports tournament tracking mobile application designed to improve tournament visibility by providing instant score updates, player statistics, and live tournament standings for organizers, players, and spectators. Organizers can update match scores in real time, and all connected users can instantly view the updated information through the mobile application, ensuring transparency and engagement during tournaments.
+**Tournament Tracker** is a mobile-first Flutter application integrated with Firebase that allows organizers to update match scores in real-time while spectators and players can instantly view match results, player stats, and tournament standings. Community sports tournaments often struggle to provide live score updates and player statistics. Tournament Tracker solves this by providing instant transparency and engagement through a seamless mobile experience.
 
 ## Tech Stack
 
@@ -429,4 +429,55 @@ Firebase is Google's Backend-as-a-Service (BaaS) platform that provides:
 - Cloud Functions: Serverless backend logic (optional)
 
 **Last Updated:** February 10, 2026
-**Status:** Concept-2 (Firebase Integration) Complete
+**Status: Concept-2 (Firebase Integration) Complete
+
+---
+
+## Sprint 2: Flutter & Dart Basics – Team LiveToura
+
+### 1. Project Setup & Environment
+The project has been successfully initialized with the Flutter SDK.
+- **Flutter Version**: Checked via `flutter doctor`.
+- **Project Created**: `flutter create LiveToura`.
+- **Default App Replaced**: Modified `main.dart` and created `welcome_screen.dart`.
+
+### 2. Folder Structure & Modular Design
+A clean folder hierarchy is critical for scaling. Our structure:
+
+```
+lib/
+├── main.dart          # Entry point & Theme configuration
+├── models/            # Data models (e.g., Tournament, Player, Match)
+├── screens/           # Individual UI screens (e.g., WelcomeScreen)
+├── services/          # Business logic & external data handling
+└── widgets/           # Resusable UI components
+```
+
+**Why this structure?**
+- **Separation of Concerns**: keeps UI (`screens`, `widgets`) separate from logic (`services`, `models`).
+- **Scalability**: New features can be added as new screens/models without cluttering existing files.
+- **Maintainability**: Easy to locate specific code (e.g., "Where is the Player model?" -> `models/`).
+
+### 3. Naming Conventions
+- **File Names**: `snake_case` (e.g., `welcome_screen.dart`)
+- **Class Names**: `PascalCase` (e.g., `WelcomeScreen`)
+- **Variables**: `camelCase` (e.g., `primaryColor`)
+
+### 4. Setup Instructions
+1.  **Prerequisites**: Flutter SDK installed.
+2.  **Run**:
+    ```bash
+    flutter pub get
+    flutter run
+    ```
+
+### 5. Reflection
+**What did I learn?**
+Building the "Welcome" screen reinforced the Widget Tree concept. Every UI element is a widget, nested to create complex layouts. Using `StatefulWidget` allowed me to create interactive elements (the toggle button), contrasting with static content.
+
+**How will this help later?**
+Understanding the distinction between `Stateless` and `Stateful` widgets is crucial for managing real-time data updates in LiveToura (e.g., live score changes). The modular structure will keep the codebase organized as we add more complex features like Firebase integration.
+
+### 6. Demo
+*(Screenshot placeholder - to be added after running the app)*
+```

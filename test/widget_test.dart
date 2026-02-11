@@ -10,21 +10,24 @@ import 'package:flutter_test/flutter_test.dart';
 
 import 'package:livetoura/main.dart';
 
+import 'package:livetoura/screens/welcome_screen.dart';
+
 void main() {
-  testWidgets('Counter increments smoke test', (WidgetTester tester) async {
+  testWidgets('Welcome screen toggle smoke test', (WidgetTester tester) async {
     // Build our app and trigger a frame.
-    await tester.pumpWidget(const MyApp());
+    await tester.pumpWidget(const LiveTouraBasicsApp());
 
-    // Verify that our counter starts at 0.
-    expect(find.text('0'), findsOneWidget);
-    expect(find.text('1'), findsNothing);
+    // Verify that our title and initial button text are present.
+    expect(find.text('Tournament Tracker'), findsOneWidget);
+    expect(find.text('Toggle On'), findsOneWidget);
+    expect(find.text('Toggle Off'), findsNothing);
 
-    // Tap the '+' icon and trigger a frame.
-    await tester.tap(find.byIcon(Icons.add));
+    // Tap the button and trigger a frame.
+    await tester.tap(find.text('Toggle On'));
     await tester.pump();
 
-    // Verify that our counter has incremented.
-    expect(find.text('0'), findsNothing);
-    expect(find.text('1'), findsOneWidget);
+    // Verify that the button text changed.
+    expect(find.text('Toggle On'), findsNothing);
+    expect(find.text('Toggle Off'), findsOneWidget);
   });
 }
