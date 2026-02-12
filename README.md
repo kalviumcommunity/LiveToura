@@ -542,3 +542,77 @@ Responsive design ensures that **Tournament Tracker** feels "native" on any devi
 
 ### Screenshots
 *(Add screenshots of the app in Portrait (Phone) and Landscape/Tablet mode here)*
+
+---
+
+## Sprint 2 - Task 3: Firebase Integration (Auth & Firestore)
+
+### Project Title: LiveToura – Connected & Secure
+
+This feature enables secure user authentication (Sign Up/Login) and real-time data storage using Cloud Firestore. It transforms the app from a static UI into a connected platform where organizers can securely manage tournament data.
+
+### Setup Instructions
+
+1.  **Firebase Project**: Created a project in Firebase Console.
+2.  **Configuration**: Added `google-services.json` (Android) and `GoogleService-Info.plist` (iOS).
+3.  **Dependencies**:
+    -   `firebase_core`: Core Firebase initialization.
+    -   `firebase_auth`: User authentication management.
+    -   `cloud_firestore`: NoSQL database for tournament data.
+
+### Implementation Details
+
+1.  **Authentication (`auth_service.dart`)**:
+    -   Implemented `signUp` and `signIn` using `FirebaseAuth`.
+    -   Used `authStateChanges()` stream to automatically redirect users based on login status.
+2.  **Data Storage (`firestore_service.dart`)**:
+    -   Created `users` collection to store profile data upon signup.
+    -   Prepared structures for `tournaments` and `matches`.
+3.  **UI Integration**:
+    -   **Login/Signup Screens**: Clean, validated input forms.
+    -   **Home Screen**: Displays "Welcome [User]" using dynamic data from Firestore/Auth.
+    -   **Logout**: Accessible from the dashboard.
+
+### Code Snippets
+
+**Authentication Logic:**
+```dart
+Future<User?> signUp(String email, String password) async {
+  try {
+    final credential = await _auth.createUserWithEmailAndPassword(
+      email: email, 
+      password: password
+    );
+    return credential.user;
+  } catch (e) {
+    return null;
+  }
+}
+```
+
+**Real-time Auth State Monitoring:**
+```dart
+StreamBuilder<User?>(
+  stream: FirebaseAuth.instance.authStateChanges(),
+  builder: (context, snapshot) {
+    if (snapshot.hasData) {
+      return const ResponsiveHomeScreen(); // User logged in
+    } else {
+      return const LoginScreen(); // User logged out
+    }
+  },
+)
+```
+
+### Reflection
+
+**Challenges:**
+-   **State Management**: Handling the asynchronous nature of Firebase calls (awaiting login) while keeping the UI responsive (loading spinners) required careful state management.
+-   **Error Handling**: Ensuring meaningful error messages (e.g., "Weak Password" or "Email already in use") are displayed to the user instead of generic crashes.
+
+**Scalability:**
+Firebase handles the backend infrastructure, allowing the app to scale from 10 to 10,000 users without us needing to manage servers. Cloud Firestore's real-time capabilities mean any score update by an organizer is instantly pushed to all connected fans.
+
+### Screenshots
+*(Add screenshots of Signup, Login, and Authenticated Dashboard here)*
+
