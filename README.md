@@ -481,3 +481,64 @@ Understanding the distinction between `Stateless` and `Stateful` widgets is cruc
 ### 6. Demo
 *(Screenshot placeholder - to be added after running the app)*
 ```
+
+---
+
+## Sprint 2 - Task 2: Responsive Mobile Interfaces
+
+### Project Title: Tournament Tracker – Responsive Dashboard
+
+The "Responsive Dashboard" demonstrates how **Tournament Tracker** adapts its layout to different screen sizes, providing an optimal experience for both mobile and tablet users. Organizers can manage tournaments efficiently on a larger screen, while mobile users get a streamlined list view.
+
+### Implementation Details
+
+1.  **Responsive Layout**:
+    -   **Mobile**: A single-column scrollable list for clear visibility on small screens.
+    -   **Tablet**: A two-column layout with a side navigation rail and a grid view for match cards, utilizing the extra screen real estate.
+2.  **Adaptive Widgets**:
+    -   Used `MediaQuery` to determine the current screen width and switch high-level layouts.
+    -   Implemented `LayoutBuilder` to make fine-grained layout decisions based on parent widget constraints.
+    -   Used `Expanded` and `Flexible` to ensure content fills available space without overflowing.
+
+### Code Snippets
+
+**Using MediaQuery for Screen Detection:**
+
+```dart
+// Check screen width to determine device type
+final size = MediaQuery.of(context).size;
+final isTablet = size.width > 600;
+
+// Use this boolean to toggle UI elements
+Text(isTablet ? 'Welcome, Organizer!' : 'Hi there!');
+```
+
+**Using LayoutBuilder for Adaptive Content:**
+
+```dart
+LayoutBuilder(
+  builder: (context, constraints) {
+    if (constraints.maxWidth > 600) {
+      // Return Grid View for wider screens
+      return GridView.builder(...);
+    } else {
+      // Return List View for narrower screens
+      return ListView.builder(...);
+    }
+  },
+)
+```
+
+### Reflection
+
+**Challenges & Solutions:**
+-   **Challenge**: Designing a layout that looks good on both 400px (phone) and 800px+ (tablet) widths without duplicating code.
+    -   **Solution**: Extracted common widgets like `_buildMatchCard` so they can be reused in both the `ListView` and `GridView`.
+-   **Challenge**: Handling navigation differently (Bottom Bar vs Side Rail).
+    -   **Solution**: specific conditional checks (`isTablet ? ... : ...`) to render the appropriate navigation widget.
+
+**Impact on Usability:**
+Responsive design ensures that **Tournament Tracker** feels "native" on any device. Organizers often use tablets for managing games, so a dashboard that leverages that space for a grid view makes their job faster and easier compared to scrolling through a long list.
+
+### Screenshots
+*(Add screenshots of the app in Portrait (Phone) and Landscape/Tablet mode here)*
