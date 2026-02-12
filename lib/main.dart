@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'screens/welcome_screen.dart';
+import 'screens/responsive_home.dart';
 
 void main() {
   runApp(const LiveTouraBasicsApp());
@@ -114,7 +115,7 @@ class LiveTouraBasicsApp extends StatelessWidget {
     return MaterialApp(
       title: 'LiveToura — Welcome',
       theme: LiveTouraTheme.lightTheme,
-      home: const WelcomeScreen(),
+      home: const ResponsiveHomeScreen(),
       debugShowCheckedModeBanner: false,
     );
   }
