@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'login_screen.dart';
 
 class ResponsiveHomeScreen extends StatelessWidget {
   const ResponsiveHomeScreen({super.key});
@@ -101,6 +103,8 @@ class ResponsiveHomeScreen extends StatelessWidget {
   // Header Section
   Widget _buildHeaderSection(BuildContext context, {required bool isTablet}) {
     final colorScheme = Theme.of(context).colorScheme;
+    final user = FirebaseAuth.instance.currentUser;
+    final displayName = user?.displayName ?? 'Organizer';
     
     return Container(
       width: double.infinity,
@@ -122,12 +126,29 @@ class ResponsiveHomeScreen extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
-            'Welcome Back, Organizer!',
-            style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                  color: colorScheme.onPrimary,
-                  fontWeight: FontWeight.bold,
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                'Welcome Back, $displayName!',
+                style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                      color: colorScheme.onPrimary,
+                      fontWeight: FontWeight.bold,
+                    ),
+              ),
+              if (!isTablet) // Show logout here on mobile if needed, or rely on AppBar
+                 IconButton(
+                  icon: Icon(Icons.logout, color: colorScheme.onPrimary),
+                  onPressed: () async {
+                    await FirebaseAuth.instance.signOut();
+                    if (context.mounted) {
+                      Navigator.of(context).pushReplacement(
+                        MaterialPageRoute(builder: (_) => const LoginScreen()),
+                      );
+                    }
+                  },
                 ),
+            ],
           ),
           const SizedBox(height: 8),
           Text(
