@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import '../services/firestore_service.dart';
 import 'login_screen.dart';
 
 class ResponsiveHomeScreen extends StatelessWidget {
@@ -7,265 +9,383 @@ class ResponsiveHomeScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // 2. Implement Responsiveness with MediaQuery
+    final user = FirebaseAuth.instance.currentUser;
+    final displayName = user?.displayName ?? 'Organizer';
     final size = MediaQuery.of(context).size;
-    final isTablet = size.width > 600;
-    
-    // Theme colors
-    final primaryColor = Theme.of(context).primaryColor;
-    final secondaryColor = Theme.of(context).colorScheme.secondary;
+    final isTablet = size.width > 700;
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Tournament Tracker Dashboard'),
-        centerTitle: true,
-        backgroundColor: primaryColor,
-        foregroundColor: Colors.white,
-      ),
-      body: LayoutBuilder(
-        builder: (context, constraints) {
-          // 3. Apply Flexible and Adaptive Widgets: LayoutBuilder
-          if (constraints.maxWidth > 600) {
-            // Tablet Layout: Two-column grid / Split view
-            return Row(
-              children: [
-                // Navigation / Sidebar for Tablet
-                NavigationRail(
-                  selectedIndex: 0,
-                  onDestinationSelected: (int index) {},
-                  labelType: NavigationRailLabelType.all,
-                  destinations: const [
-                    NavigationRailDestination(
-                      icon: Icon(Icons.dashboard),
-                      label: Text('Dashboard'),
-                    ),
-                    NavigationRailDestination(
-                      icon: Icon(Icons.sports_soccer),
-                      label: Text('Matches'),
-                    ),
-                    NavigationRailDestination(
-                      icon: Icon(Icons.people),
-                      label: Text('Players'),
+      backgroundColor: const Color(0xFFF5F7FA), // Light grey background for contrast
+      body: CustomScrollView(
+        slivers: [
+          // 1. Modern Collapsing App Bar
+          SliverAppBar.medium(
+            expandedHeight: 120.0,
+            floating: false,
+            pinned: true,
+            backgroundColor: Colors.transparent,
+            flexibleSpace: Container(
+              decoration: const BoxDecoration(
+                gradient: LinearGradient(
+                  colors: [Color(0xFF1F51BA), Color(0xFF6750A4)],
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                ),
+              ),
+              child: FlexibleSpaceBar(
+                titlePadding: const EdgeInsets.only(left: 16, bottom: 16),
+                title: Text(
+                  'LiveToura',
+                  style: const TextStyle(
+                    color: Colors.white, 
+                    fontWeight: FontWeight.bold,
+                    letterSpacing: 1.2,
+                  ),
+                ),
+                background: Stack(
+                  children: [
+                    Positioned(
+                      right: -20,
+                      top: -20,
+                      child: Icon(Icons.sports_soccer, size: 150, color: Colors.white.withOpacity(0.1)),
                     ),
                   ],
                 ),
-                const VerticalDivider(thickness: 1, width: 1),
-                // Main Content
-                Expanded(
-                  child: SingleChildScrollView(
-                    child: Padding(
-                      padding: const EdgeInsets.all(24.0),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
+              ),
+            ),
+            actions: [
+              IconButton(
+                icon: const Icon(Icons.notifications_outlined, color: Colors.white),
+                onPressed: () {},
+              ),
+              IconButton(
+                icon: const Icon(Icons.logout, color: Colors.white),
+                onPressed: () async {
+                  await FirebaseAuth.instance.signOut();
+                  if (context.mounted) {
+                    Navigator.of(context).pushReplacement(
+                      MaterialPageRoute(builder: (_) => const LoginScreen()),
+                    );
+                  }
+                },
+              ),
+            ],
+          ),
+
+          // 2. Welcome & Stats Section
+          SliverToBoxAdapter(
+            child: Padding(
+              padding: const EdgeInsets.all(20.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Welcome back, $displayName 👋',
+                    style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w600, color: Colors.black87),
+                  ),
+                  const SizedBox(height: 20),
+                  const SingleChildScrollView(
+                    scrollDirection: Axis.horizontal,
+                    child: Row(
+                      children: [
+                        _StatCard(title: 'Active Events', count: '3', icon: Icons.local_fire_department, color: Colors.orange),
+                        SizedBox(width: 12),
+                        _StatCard(title: 'Total Players', count: '128', icon: Icons.people, color: Colors.blue),
+                        SizedBox(width: 12),
+                        _StatCard(title: 'Upcoming', count: '5', icon: Icons.calendar_today, color: Colors.purple),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 30),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      const Text(
+                        'Your Tournaments',
+                        style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.black87),
+                      ),
+                      TextButton(
+                        onPressed: () {}, 
+                        child: const Text('View All'),
+                      )
+                    ],
+                  ),
+                ],
+              ),
+            ),
+          ),
+
+          // 3. Tournament List (StreamBuilder)
+          StreamBuilder<QuerySnapshot>(
+            stream: FirestoreService().getTournaments(),
+            builder: (context, snapshot) {
+              if (snapshot.hasError) {
+                return SliverToBoxAdapter(child: Center(child: Text('Error: ${snapshot.error}')));
+              }
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return const SliverToBoxAdapter(child: Center(child: Padding(padding: EdgeInsets.all(20), child: CircularProgressIndicator())));
+              }
+
+              final tournaments = snapshot.data?.docs ?? [];
+
+              if (tournaments.isEmpty) {
+                return SliverToBoxAdapter(
+                  child: Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(Icons.emoji_events_outlined, size: 64, color: Colors.grey[400]),
+                        const SizedBox(height: 16),
+                        Text('No tournaments yet', style: TextStyle(color: Colors.grey[600])),
+                        const SizedBox(height: 8),
+                        ElevatedButton(
+                          onPressed: () => _showCreateTournamentDialog(context),
+                          child: const Text('Create Your First Event'),
+                        ),
+                      ],
+                    ),
+                  ),
+                );
+              }
+
+              // Responsive Grid vs List
+              if (isTablet) {
+                 return SliverPadding(
+                    padding: const EdgeInsets.symmetric(horizontal: 20),
+                    sliver: SliverGrid(
+                      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                        crossAxisCount: 2,
+                        childAspectRatio: 1.6,
+                        crossAxisSpacing: 16,
+                        mainAxisSpacing: 16,
+                      ),
+                      delegate: SliverChildBuilderDelegate(
+                        (context, index) => _TournamentCard(doc: tournaments[index]),
+                        childCount: tournaments.length,
+                      ),
+                    ),
+                 );
+              } else {
+                 return SliverList(
+                   delegate: SliverChildBuilderDelegate(
+                     (context, index) => Padding(
+                       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+                       child: _TournamentCard(doc: tournaments[index]),
+                     ),
+                     childCount: tournaments.length,
+                   ),
+                 );
+              }
+            },
+          ),
+          
+          // Bottom padding for FAB
+          const SliverToBoxAdapter(child: SizedBox(height: 80)),
+        ],
+      ),
+      floatingActionButton: FloatingActionButton.extended(
+        onPressed: () => _showCreateTournamentDialog(context),
+        backgroundColor: const Color(0xFF1F51BA),
+        icon: const Icon(Icons.add, color: Colors.white),
+        label: const Text('New Tournament', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+        elevation: 4,
+      ),
+    );
+  }
+
+  void _showCreateTournamentDialog(BuildContext context) {
+    final nameController = TextEditingController();
+    final typeController = TextEditingController();
+
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Create New Tournament'),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            TextField(
+              controller: nameController,
+              decoration: InputDecoration(
+                labelText: 'Tournament Name',
+                border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                prefixIcon: const Icon(Icons.emoji_events),
+              ),
+            ),
+            const SizedBox(height: 12),
+            TextField(
+              controller: typeController,
+              decoration: InputDecoration(
+                labelText: 'Sport Type (e.g. Soccer)',
+                border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                prefixIcon: const Icon(Icons.sports_soccer),
+              ),
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Cancel'),
+          ),
+          FilledButton(
+            onPressed: () {
+              if (nameController.text.isNotEmpty && typeController.text.isNotEmpty) {
+                FirestoreService().createTournament(
+                  nameController.text.trim(),
+                  typeController.text.trim(),
+                );
+                Navigator.pop(context);
+              }
+            },
+            child: const Text('Create Event'),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _StatCard extends StatelessWidget {
+  final String title;
+  final String count;
+  final IconData icon;
+  final Color color;
+
+  const _StatCard({required this.title, required this.count, required this.icon, required this.color});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: 140,
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: [
+          BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 10, offset: const Offset(0, 4)),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Container(
+            padding: const EdgeInsets.all(8),
+            decoration: BoxDecoration(color: color.withOpacity(0.1), shape: BoxShape.circle),
+            child: Icon(icon, color: color, size: 20),
+          ),
+          const SizedBox(height: 12),
+          Text(count, style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
+          const SizedBox(height: 4),
+          Text(title, style: TextStyle(fontSize: 12, color: Colors.grey[600])),
+        ],
+      ),
+    );
+  }
+}
+
+class _TournamentCard extends StatelessWidget {
+  final QueryDocumentSnapshot doc;
+
+  const _TournamentCard({required this.doc});
+
+  @override
+  Widget build(BuildContext context) {
+    final data = doc.data() as Map<String, dynamic>;
+    final name = data['name'] ?? 'Tournament';
+    final type = data['type'] ?? 'General';
+    final status = data['status'] ?? 'unknown';
+    
+    final isLive = status.toLowerCase() == 'live';
+
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(20),
+        boxShadow: [
+          BoxShadow(color: Colors.black.withOpacity(0.04), blurRadius: 15, offset: const Offset(0, 5)),
+        ],
+      ),
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          borderRadius: BorderRadius.circular(20),
+          onTap: () {
+            // Navigate to details
+          },
+          child: Padding(
+            padding: const EdgeInsets.all(20),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                      decoration: BoxDecoration(
+                        color: isLive ? Colors.red.withOpacity(0.1) : Colors.blue.withOpacity(0.1),
+                        borderRadius: BorderRadius.circular(20),
+                      ),
+                      child: Row(
                         children: [
-                          _buildHeaderSection(context, isTablet: true),
-                          const SizedBox(height: 24),
-                          _buildTabletGridContent(),
+                          Icon(Icons.circle, size: 8, color: isLive ? Colors.red : Colors.blue),
+                          const SizedBox(width: 6),
+                          Text(
+                            status.toUpperCase(),
+                            style: TextStyle(
+                              fontSize: 11,
+                              fontWeight: FontWeight.bold,
+                              color: isLive ? Colors.red : Colors.blue,
+                            ),
+                          ),
                         ],
                       ),
                     ),
-                  ),
-                ),
-              ],
-            );
-          } else {
-            // Mobile Layout: Single Column
-            return SingleChildScrollView(
-              child: Column(
-                children: [
-                  _buildHeaderSection(context, isTablet: false),
-                  const SizedBox(height: 16),
-                  _buildMobileListContent(),
-                ],
-              ),
-            );
-          }
-        },
-      ),
-      // Footer / Floating Action Button
-      floatingActionButton: FloatingActionButton.extended(
-        onPressed: () {},
-        label: Text(isTablet ? 'Create Tournament' : 'Add'),
-        icon: const Icon(Icons.add),
-        backgroundColor: secondaryColor,
-      ),
-      bottomNavigationBar: isTablet ? null : BottomNavigationBar(
-        currentIndex: 0,
-        items: const [
-          BottomNavigationBarItem(icon: Icon(Icons.dashboard), label: 'Home'),
-          BottomNavigationBarItem(icon: Icon(Icons.sports), label: 'Matches'),
-          BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Profile'),
-        ],
-      ),
-    );
-  }
-
-  // Header Section
-  Widget _buildHeaderSection(BuildContext context, {required bool isTablet}) {
-    final colorScheme = Theme.of(context).colorScheme;
-    final user = FirebaseAuth.instance.currentUser;
-    final displayName = user?.displayName ?? 'Organizer';
-    
-    return Container(
-      width: double.infinity,
-      padding: EdgeInsets.all(isTablet ? 32.0 : 16.0),
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          colors: [
-            colorScheme.primary,
-            colorScheme.primaryContainer,
-          ],
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-        ),
-        borderRadius: isTablet ? BorderRadius.circular(16) : const BorderRadius.only(
-          bottomLeft: Radius.circular(24),
-          bottomRight: Radius.circular(24),
-        ),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(
-                'Welcome Back, $displayName!',
-                style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                      color: colorScheme.onPrimary,
-                      fontWeight: FontWeight.bold,
+                    IconButton(
+                      icon: const Icon(Icons.more_horiz, color: Colors.grey),
+                      onPressed: () {
+                         // Simple delete for demo
+                         FirestoreService().deleteTournament(doc.id);
+                      },
                     ),
-              ),
-              if (!isTablet) // Show logout here on mobile if needed, or rely on AppBar
-                 IconButton(
-                  icon: Icon(Icons.logout, color: colorScheme.onPrimary),
-                  onPressed: () async {
-                    await FirebaseAuth.instance.signOut();
-                    if (context.mounted) {
-                      Navigator.of(context).pushReplacement(
-                        MaterialPageRoute(builder: (_) => const LoginScreen()),
-                      );
-                    }
-                  },
+                  ],
                 ),
-            ],
-          ),
-          const SizedBox(height: 8),
-          Text(
-            'Manage your live tournaments and track scores in real-time.',
-            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                  color: colorScheme.onPrimary.withOpacity(0.8),
-                ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  // Mobile Content: List View
-  Widget _buildMobileListContent() {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16.0),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const Text(
-            'Live Matches',
-            style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-          ),
-          const SizedBox(height: 12),
-          ListView.builder(
-            shrinkWrap: true,
-            physics: const NeverScrollableScrollPhysics(),
-            itemCount: 5,
-            itemBuilder: (context, index) => _buildMatchCard(index),
-          ),
-        ],
-      ),
-    );
-  }
-
-  // Tablet Content: Grid View
-  Widget _buildTabletGridContent() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        const Text(
-          'Live Matches & Stats',
-          style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-        ),
-        const SizedBox(height: 16),
-        GridView.builder(
-          shrinkWrap: true,
-          physics: const NeverScrollableScrollPhysics(),
-          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-            crossAxisCount: 2, // Two columns for tablet
-            crossAxisSpacing: 16,
-            mainAxisSpacing: 16,
-            childAspectRatio: 1.5,
-          ),
-          itemCount: 6,
-          itemBuilder: (context, index) => _buildMatchCard(index),
-        ),
-      ],
-    );
-  }
-
-  // Adaptive Card Widget
-  Widget _buildMatchCard(int index) {
-    return Card(
-      elevation: 4,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-      child: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              children: [
-                const Icon(Icons.sports_soccer, color: Colors.green),
-                const SizedBox(width: 8),
+                const SizedBox(height: 12),
                 Text(
-                  'Match #${index + 1}',
-                  style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                  name,
+                  style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold, height: 1.2),
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                ),
+                const SizedBox(height: 6),
+                 Row(
+                  children: [
+                    Icon(Icons.category_outlined, size: 14, color: Colors.grey[600]),
+                    const SizedBox(width: 4),
+                    Text(type, style: TextStyle(fontSize: 13, color: Colors.grey[600])),
+                  ],
                 ),
                 const Spacer(),
-                Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                  decoration: BoxDecoration(
-                    color: Colors.redAccent,
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  child: const Text(
-                    'LIVE',
-                    style: TextStyle(color: Colors.white, fontSize: 10),
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 12),
-            const Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Column(
+                const Divider(),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Text('Team A', style: TextStyle(fontSize: 14)),
-                    SizedBox(height: 4),
-                    Text('2', style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
-                  ],
-                ),
-                Text('VS', style: TextStyle(color: Colors.grey, fontWeight: FontWeight.bold)),
-                Column(
-                  children: [
-                    Text('Team B', style: TextStyle(fontSize: 14)),
-                    SizedBox(height: 4),
-                    Text('1', style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
+                    const Text('8 Teams', style: TextStyle(fontWeight: FontWeight.w500)),
+                    Container(
+                      decoration: BoxDecoration(
+                        color: Colors.grey[100],
+                        shape: BoxShape.circle,
+                      ),
+                      padding: const EdgeInsets.all(8),
+                      child: const Icon(Icons.arrow_forward, size: 16),
+                    ),
                   ],
                 ),
               ],
             ),
-          ],
+          ),
         ),
       ),
     );

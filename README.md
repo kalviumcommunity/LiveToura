@@ -567,11 +567,11 @@ This feature enables secure user authentication (Sign Up/Login) and real-time da
     -   Used `authStateChanges()` stream to automatically redirect users based on login status.
 2.  **Data Storage (`firestore_service.dart`)**:
     -   Created `users` collection to store profile data upon signup.
-    -   Prepared structures for `tournaments` and `matches`.
+    -   Implemented CRUD operations for `tournaments` collection (Create, Read, Delete).
 3.  **UI Integration**:
     -   **Login/Signup Screens**: Clean, validated input forms.
-    -   **Home Screen**: Displays "Welcome [User]" using dynamic data from Firestore/Auth.
-    -   **Logout**: Accessible from the dashboard.
+    -   **Home Screen**: Displays "Welcome [User]" and a real-time list/grid of Tournaments fetched from Firestore.
+    -   **Create Tournament**: Added dialog to create new tournaments.
 
 ### Code Snippets
 
@@ -590,16 +590,22 @@ Future<User?> signUp(String email, String password) async {
 }
 ```
 
-**Real-time Auth State Monitoring:**
+**Real-time Firestore Data (Tournaments):**
 ```dart
-StreamBuilder<User?>(
-  stream: FirebaseAuth.instance.authStateChanges(),
+StreamBuilder<QuerySnapshot>(
+  stream: FirestoreService().getTournaments(),
   builder: (context, snapshot) {
     if (snapshot.hasData) {
-      return const ResponsiveHomeScreen(); // User logged in
-    } else {
-      return const LoginScreen(); // User logged out
+      final tournaments = snapshot.data!.docs;
+      return ListView.builder(
+        itemCount: tournaments.length,
+        itemBuilder: (context, index) {
+          final data = tournaments[index].data() as Map<String, dynamic>;
+          return ListTile(title: Text(data['name']));
+        },
+      );
     }
+    return const CircularProgressIndicator();
   },
 )
 ```

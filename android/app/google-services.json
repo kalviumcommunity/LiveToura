@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "1040297566884",
+    "project_id": "livetoura",
+    "storage_bucket": "livetoura.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1040297566884:android:ebd6884fb27d80a9fafc31",
+        "android_client_info": {
+          "package_name": "com.example.livetoura"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAjfXQ0tFMnVTfRwP-I2859CE7ot9Grsbg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
