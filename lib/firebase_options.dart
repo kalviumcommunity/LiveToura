@@ -3,28 +3,57 @@
 // This file must be regenerated after running: flutter pub get
 
 import 'package:firebase_core/firebase_core.dart' show FirebaseOptions;
-import 'package:flutter/foundation.dart';
+import 'package:flutter/foundation.dart'
+    show defaultTargetPlatform, kIsWeb, TargetPlatform;
 
 class DefaultFirebaseOptions {
   static FirebaseOptions get currentPlatform {
-    if (defaultTargetPlatform == TargetPlatform.android) {
-      return android;
+    if (kIsWeb) {
+      return web;
     }
-    if (defaultTargetPlatform == TargetPlatform.iOS) {
-      return ios;
+    switch (defaultTargetPlatform) {
+      case TargetPlatform.android:
+        return android;
+      case TargetPlatform.iOS:
+        return ios;
+      case TargetPlatform.macOS:
+        throw UnsupportedError(
+          'DefaultFirebaseOptions have not been configured for macos - '
+          'you can reconfigure this by running the FlutterFire CLI again.',
+        );
+      case TargetPlatform.windows:
+        throw UnsupportedError(
+          'DefaultFirebaseOptions have not been configured for windows - '
+          'you can reconfigure this by running the FlutterFire CLI again.',
+        );
+      case TargetPlatform.linux:
+        throw UnsupportedError(
+          'DefaultFirebaseOptions have not been configured for linux - '
+          'you can reconfigure this by running the FlutterFire CLI again.',
+        );
+      default:
+        throw UnsupportedError(
+          'DefaultFirebaseOptions are not supported for this platform.',
+        );
     }
-    throw UnsupportedError(
-      'DefaultFirebaseOptions are not supported for this platform.',
-    );
   }
 
   static const FirebaseOptions android = FirebaseOptions(
-    apiKey: 'YOUR_ANDROID_API_KEY',
-    appId: 'YOUR_ANDROID_APP_ID',
-    messagingSenderId: 'YOUR_MESSAGING_SENDER_ID',
-    projectId: 'YOUR_PROJECT_ID',
-    databaseURL: 'YOUR_DATABASE_URL',
-    storageBucket: 'YOUR_STORAGE_BUCKET',
+    apiKey: 'AIzaSyAjfXQ0tFMnVTfRwP-I2859CE7ot9Grsbg',
+    appId: '1:1040297566884:android:ebd6884fb27d80a9fafc31',
+    messagingSenderId: '1040297566884',
+    projectId: 'livetoura',
+    storageBucket: 'livetoura.firebasestorage.app',
+  );
+
+  static const FirebaseOptions web = FirebaseOptions(
+    apiKey: 'AIzaSyACXo-ZqZOmDZTlZ6yqFNqtdiuje_utMyk',
+    appId: '1:1040297566884:web:a443754b750c3e91fafc31',
+    messagingSenderId: '1040297566884',
+    projectId: 'livetoura',
+    authDomain: 'livetoura.firebaseapp.com',
+    storageBucket: 'livetoura.firebasestorage.app',
+    measurementId: 'G-XK8FJNL7XH',
   );
 
   static const FirebaseOptions ios = FirebaseOptions(
@@ -36,12 +65,4 @@ class DefaultFirebaseOptions {
     storageBucket: 'YOUR_STORAGE_BUCKET',
     iosBundleId: 'com.livetoura.app',
   );
-}
-
-import 'dart:io' show Platform, TargetPlatform;
-
-TargetPlatform get defaultTargetPlatform {
-  if (Platform.isAndroid) return TargetPlatform.android;
-  if (Platform.isIOS) return TargetPlatform.iOS;
-  throw UnsupportedError('Platform not supported');
 }
