@@ -19,6 +19,8 @@ lib/
 └── services/          # API/Firebase services (future use)
 ```
 
+**[ 📂 Click here for a detailed breakdown of the Project Structure >](PROJECT_STRUCTURE.md)**
+
 ### Directory purposes
 - lib/main.dart: App bootstrap, theme, and initial route.
 - lib/screens/: Each file defines a single, focused screen widget.
