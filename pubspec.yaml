@@ -28,3 +28,7 @@ dev_dependencies:
 
 flutter:
   uses-material-design: true
+  
+  # Asset declarations for static resources
+  assets:
+    - assets/demo/
