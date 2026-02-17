@@ -82,16 +82,27 @@ Record a 1–2 minute demo showing: the app running, folder structure in the IDE
 ## Setup Verification
 
 ### Steps Followed
-1.  **Installed Flutter SDK**: Downloaded and configured Flutter SDK.
-2.  **Configured Android Studio/VS Code**: Installed necessary Flutter and Dart plugins.
-3.  **Emulator Setup**: Configured Android Emulator (Pixel 6).
-4.  **Created Project**: Ran `flutter create first_flutter_app`.
-5.  **Verified Installation**: Ran `flutter doctor`.
+1.  **Installed Flutter SDK**: Verified Flutter SDK v3.29.0 is installed.
+2.  **Environment Check**: Ran `flutter doctor` to diagnose setup issues.
+    -   **Web**: Connected and ready (Chrome/Edge).
+    -   **Windows**: Visual Studio C++ components missing.
+    -   **Android**: Android SDK not found.
+3.  **App Verification**: Successfully built the app for Web (`flutter build web`).
+4.  **Next Steps**: 
+    -   Install Android Studio and SDK for mobile development.
+    -   Install "Desktop development with C++" workload in Visual Studio for Windows support.
 
-### Screenshots
-*(Place your screenshots here)*
--   **Flutter Doctor**: `flutter_doctor_output.png`
--   **Running App**: `emulator_screen.png`
+### Verification Output
+**Flutter Doctor Output:**
+```
+[√] Flutter (Channel stable, 3.29.0, on Microsoft Windows [Version 10.0.26200.7840], locale en-US)
+[X] Android toolchain - develop for Android devices
+    X Unable to locate Android SDK.
+[X] Visual Studio - develop Windows apps
+    X Visual Studio is missing necessary components.
+[√] Chrome - develop for the web
+[√] Connected device (3 available)
+```
 
 ### Reflection
-Setting up the environment was straightforward. The main challenge was ensuring the Android SDK path was correctly set in the environment variables. This setup is crucial as it allows for real-time testing and debugging on emulated devices, which is essential for mobile development. Ready to build amazing apps!
+The Flutter SDK installation was successful, allowing for web development immediately. However, full mobile and desktop support requires additional platform-specific tools (Android Studio, Visual Studio C++ workload). Prioritizing web verification allowed us to confirm the Flutter installation itself is healthy while pending the larger downloads for Android/Windows.
