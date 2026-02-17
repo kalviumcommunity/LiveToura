@@ -433,6 +433,63 @@ Firebase is Google's Backend-as-a-Service (BaaS) platform that provides:
 
 ---
 
+## Sprint 2 - Task 1: Understanding the Widget Tree and Reactive UI
+
+### Project Title: Widget Tree Demo - Welcome Screen
+
+This task demonstrates Flutter's widget tree structure and reactive UI model using a custom "Welcome Screen". The screen features a stateful toggle that updates the UI color and text when pressed.
+
+### Widget Tree Hierarchy
+
+The following tree represents the structure of the `WelcomeScreen`:
+
+```
+MaterialApp (Root)
+ ┗ Scaffold
+    ┣ AppBar
+    ┃  ┗ Text ('Welcome')
+    ┗ Body (Center)
+       ┗ Padding
+          ┗ Column
+             ┣ Text ('Tournament Tracker')
+             ┣ SizedBox (Subject to spacing)
+             ┣ Icon (Sports Score)
+             ┣ SizedBox
+             ┗ ElevatedButton
+                ┗ Text ('Toggle On/Off')
+```
+
+### Reactive UI Explanation
+
+The **WelcomeScreen** is a `StatefulWidget` that maintains a boolean state variable `_toggled`.
+
+1.  **State Change**: When the `ElevatedButton` is pressed, `_toggle()` is called.
+    ```dart
+    void _toggle() {
+      setState(() {
+        _toggled = !_toggled;
+      });
+    }
+    ```
+2.  **Rebuild**: Calling `setState` triggers Flutter to run the `build` method again.
+3.  **Update**:
+    -   The **Text color** changes between Primary and Secondary.
+    -   The **Icon color** swaps.
+    -   The **Button text** updates to reflect the new state.
+
+This demonstrates that Flutter only rebuilds the widgets that need to change based on the new state, rather than repainting the entire application from scratch.
+
+### How to Run the Demo
+
+To isolate this task for verification (screenshots/video):
+
+```bash
+flutter run -t lib/main_widget_tree_demo.dart
+```
+
+---
+---
+
 ## Sprint 2: Flutter & Dart Basics – Team LiveToura
 
 ### 1. Project Setup & Environment
