@@ -87,7 +87,8 @@ Record a 1–2 minute demo showing: the app running, folder structure in the IDE
     -   **Web**: Connected and ready (Chrome/Edge).
     -   **Windows**: Visual Studio C++ components missing.
     -   **Android**: Android SDK not found.
-3.  **App Verification**: Successfully built the app for Web (`flutter build web`).
+3.  **App Verification**: Validated the existing **LiveToura** project by successfully building for Web (`flutter build web`).
+    -   *Note: Removed redundant `first_flutter_app` folder as the main project repository is already initialized.*
 4.  **Next Steps**: 
     -   Install Android Studio and SDK for mobile development.
     -   Install "Desktop development with C++" workload in Visual Studio for Windows support.
