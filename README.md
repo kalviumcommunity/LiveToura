@@ -622,3 +622,136 @@ Firebase handles the backend infrastructure, allowing the app to scale from 10 t
 ### Screenshots
 *(Add screenshots of Signup, Login, and Authenticated Dashboard here)*
 
+---
+
+## Sprint 2 - Concept 2: Flutter Folder Structure Exploration
+
+### Objective
+Explore and document the structure of a Flutter project to understand the role of each folder and file that Flutter automatically generates.
+
+### Project Folder Structure Overview
+
+The LiveToura project follows a clean, scalable architecture. Below is a summary of the key directories:
+
+```
+LiveToura/
+├── lib/                    # 🎯 Core application code (99% of your work)
+│   ├── main.dart           # Entry point
+│   ├── screens/            # UI screens
+│   ├── services/           # Business logic
+│   ├── widgets/            # Reusable components
+│   └── models/             # Data models
+├── android/                # 🤖 Android platform configuration
+├── ios/                    # 🍎 iOS platform configuration
+├── web/                    # 🌐 Web platform files
+├── assets/                 # 🎨 Images, fonts, static files
+├── test/                   # 🧪 Automated tests
+└── pubspec.yaml            # 📦 Dependencies & configuration
+```
+
+### Key Files and Their Purposes
+
+| File/Folder | Purpose |
+|-------------|---------|
+| `lib/` | Core Dart code - screens, widgets, services, models |
+| `android/` | Android build config, permissions, Firebase setup |
+| `ios/` | iOS build config, Info.plist, code signing |
+| `assets/` | Static resources (images, fonts, JSON) |
+| `test/` | Unit, widget, and integration tests |
+| `pubspec.yaml` | Dependencies, assets, app metadata |
+| `.gitignore` | Files to exclude from version control |
+
+### Detailed Documentation
+
+For a comprehensive breakdown of each folder and file, including:
+- Visual folder hierarchy diagram
+- Detailed purpose of each directory
+- Configuration file explanations
+- Architecture pattern overview
+- Cross-platform build system explanation
+
+**See: [PROJECT_STRUCTURE.md](PROJECT_STRUCTURE.md)**
+
+### Reflection
+
+#### Why Understanding Folder Structure Matters
+
+1. **Faster Development**: Knowing where files belong reduces search time
+2. **Fewer Errors**: Proper organization prevents accidental modifications
+3. **Better Debugging**: Understanding structure helps trace issues to their source
+4. **Platform Mastery**: Knowing `android/` and `ios/` enables platform-specific customization
+
+#### How Clean Structure Helps Team Collaboration
+
+| Benefit | Description |
+|---------|-------------|
+| **Consistency** | Everyone follows the same organizational conventions |
+| **Onboarding** | New team members understand the project quickly |
+| **Code Reviews** | Clear structure makes PRs easier to review |
+| **Parallel Work** | Team members work on different features without conflicts |
+| **Maintainability** | Clean separation of concerns makes updates safer |
+
+### IDE Folder Structure Screenshot
+
+```
+📁 LiveToura
+├── 📁 .git
+├── 📁 android
+│   ├── 📁 app
+│   │   ├── 📄 build.gradle.kts
+│   │   └── 📄 google-services.json
+│   └── 📄 settings.gradle.kts
+├── 📁 assets
+│   └── 📁 demo
+├── 📁 ios
+│   ├── 📁 Runner
+│   └── 📁 Runner.xcworkspace
+├── 📁 lib
+│   ├── 📄 main.dart
+│   ├── 📄 firebase_options.dart
+│   ├── 📁 models
+│   ├── 📁 screens
+│   │   ├── 📄 login_screen.dart
+│   │   ├── 📄 signup_screen.dart
+│   │   ├── 📄 responsive_home.dart
+│   │   └── 📄 welcome_screen.dart
+│   ├── 📁 services
+│   │   ├── 📄 auth_service.dart
+│   │   └── 📄 firestore_service.dart
+│   └── 📁 widgets
+├── 📁 test
+│   └── 📄 widget_test.dart
+├── 📁 web
+├── 📁 windows
+├── 📁 linux
+├── 📁 macos
+├── 📄 pubspec.yaml
+├── 📄 analysis_options.yaml
+├── 📄 README.md
+└── 📄 PROJECT_STRUCTURE.md
+```
+
+### How Flutter's Cross-Platform Build Works
+
+```
+     ┌─────────────────┐
+     │   lib/ (Dart)   │  ← Shared code
+     └────────┬────────┘
+              │
+              ▼
+     ┌─────────────────┐
+     │  Flutter Engine │  ← Compiles to native
+     └────────┬────────┘
+              │
+    ┌─────────┼─────────┐
+    ▼         ▼         ▼
+┌───────┐ ┌───────┐ ┌───────┐
+│Android│ │  iOS  │ │  Web  │
+└───────┘ └───────┘ └───────┘
+```
+
+---
+
+**Last Updated:** February 17, 2026  
+**Status:** Sprint 2 Concept 2 (Flutter Folder Structure) Complete
+
