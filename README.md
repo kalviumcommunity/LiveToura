@@ -433,58 +433,465 @@ Firebase is Google's Backend-as-a-Service (BaaS) platform that provides:
 
 ---
 
-## Sprint 2 - Task 1: Understanding the Widget Tree and Reactive UI
+## Sprint 2 - Task 1: Understanding the Widget Tree and Reactive UI Model
 
-### Project Title: Widget Tree Demo - Welcome Screen
+### Project Title: Widget Tree & Reactive UI – Comprehensive Demo
 
-This task demonstrates Flutter's widget tree structure and reactive UI model using a custom "Welcome Screen". The screen features a stateful toggle that updates the UI color and text when pressed.
+This task demonstrates Flutter's core concept: **the widget tree** – a hierarchical structure of widgets that describes the entire UI – and **the reactive UI model** – how Flutter automatically rebuilds the affected parts of the tree when state changes.
 
-### Widget Tree Hierarchy
+---
 
-The following tree represents the structure of the `WelcomeScreen`:
+### 🎯 Learning Objectives
+
+1. **Understand the Widget Tree**: Learn how widgets nest hierarchically to form complex UIs
+2. **Grasp the Reactive Model**: Understand how `setState()` triggers efficient UI updates
+3. **StatefulWidget Mastery**: Know when and how to use `StatefulWidget` for interactive UIs
+4. **Rendering Efficiency**: Understand why Flutter only rebuilds affected widgets
+5. **Visual Demonstration**: Build interactive examples showing state-driven UI updates
+
+---
+
+### Part 1: Widget Tree Fundamentals
+
+#### What is the Widget Tree?
+
+In Flutter, **everything is a widget**. Widgets are the basic building blocks of Flutter UIs. They describe what a piece of the UI should look like given a particular configuration and state.
+
+The **Widget Tree** is a hierarchical arrangement of these widgets, where:
+- **Root Widget** is typically `MaterialApp` or `CupertinoApp`
+- **Parent Widgets** contain **Child Widgets**
+- Each branch represents a layer of UI structure
+- Leaf nodes are typically simple widgets like `Text`, `Icon`, or `Image`
+
+**Why This Matters:**
+- Organizing widgets hierarchically makes complex UIs manageable
+- Parent-child relationships determine layout and behavior
+- Understanding the tree helps you reason about your app's structure
+
+---
+
+### Part 2: Complete Widget Tree Examples
+
+#### Example 1: Simple Welcome Screen Widget Tree
 
 ```
-MaterialApp (Root)
+MaterialApp (Entry Point - Root)
+ ┗ WidgetTreeDemoApp (StatelessWidget)
+    ┗ Scaffold (Material Design Layout)
+       ├─ AppBar (Top Bar)
+       │  ├─ Text ('Widget Tree & Reactive UI')
+       ├─ Body (Main Content Area)
+       │  ├─ Center (Centers children)
+       │  │  └─ Column (Vertical Layout)
+       │  │     ├─ Text ('Welcome to Tournament Tracker')
+       │  │     ├─ SizedBox (Spacing)
+       │  │     ├─ CircleAvatar (Profile Picture)
+       │  │     ├─ Text (Name)
+       │  │     ├─ ElevatedButton (Call to Action)
+```
+
+**Key Observations:**
+- `MaterialApp` is the root - every Flutter Material app starts here
+- `Scaffold` provides Material Design structure (AppBar, Body, FAB, Drawer)
+- `Column` is a layout widget that arranges children vertically
+- `SizedBox` adds spacing between widgets
+- Leaf widgets (`Text`, `ElevatedButton`) are the visible content
+
+#### Example 2: Reactive Profile Card with Toggle
+
+```
+ProfileCardDemo (StatefulWidget with bool _showDetails)
  ┗ Scaffold
-    ┣ AppBar
-    ┃  ┗ Text ('Welcome')
-    ┗ Body (Center)
-       ┗ Padding
-          ┗ Column
-             ┣ Text ('Tournament Tracker')
-             ┣ SizedBox (Subject to spacing)
-             ┣ Icon (Sports Score)
-             ┣ SizedBox
-             ┗ ElevatedButton
-                ┗ Text ('Toggle On/Off')
+    ├─ AppBar ('Profile Card Demo')
+    └─ Body (Center)
+       └─ Column
+          ├─ Card (Material design container)
+          │  └─ Padding
+          │     └─ Column
+          │        ├─ CircleAvatar (Profile Picture)
+          │        ├─ Text ('Name') ← Always Visible
+          │        ├─ if (_showDetails)  ← CONDITIONAL - Rebuilds!
+          │        │  └─ Column
+          │        │     ├─ Text ('Email')
+          │        │     └─ Text ('Bio')
+          │        └─ ElevatedButton ('Show/Hide Details') ← Triggers setState()
+          └─ Explanation Container
+             └─ Text (How Reactive Updates Work)
 ```
 
-### Reactive UI Explanation
+**Reactive Pattern Here:**
+1. User taps ElevatedButton
+2. `_toggle()` method called
+3. `setState(() { _showDetails = !_showDetails; })`
+4. Flutter detects state change
+5. `build()` method re-executed
+6. `if (_showDetails)` conditional re-evaluated
+7. New widgets shown/hidden
+8. **Only affected widgets rebuilt** (efficient!)
 
-The **WelcomeScreen** is a `StatefulWidget` that maintains a boolean state variable `_toggled`.
+#### Example 3: Counter App Widget Tree
 
-1.  **State Change**: When the `ElevatedButton` is pressed, `_toggle()` is called.
-    ```dart
-    void _toggle() {
-      setState(() {
-        _toggled = !_toggled;
-      });
-    }
-    ```
-2.  **Rebuild**: Calling `setState` triggers Flutter to run the `build` method again.
-3.  **Update**:
-    -   The **Text color** changes between Primary and Secondary.
-    -   The **Icon color** swaps.
-    -   The **Button text** updates to reflect the new state.
+```
+CounterAppDemo (StatefulWidget with int _count)
+ ┗ Scaffold
+    ├─ AppBar ('Counter App Demo')
+    └─ Body (Center)
+       └─ Column
+          ├─ Text ('Button Press Counter')
+          ├─ SizedBox (Spacing)
+          ├─ Container (Counter Display Circle) [Rebuilds on setState]
+          │  └─ Text ('$_count') ← REACTIVE - Changes with state!
+          ├─ SizedBox (Spacing)
+          └─ Row (Button Controls) [Static - doesn't rebuild often]
+             ├─ ElevatedButton (Decrement) ← Calls setState()
+             ├─ ElevatedButton (Reset) ← Calls setState()
+             └─ ElevatedButton (Increment) ← Calls setState()
+```
 
-This demonstrates that Flutter only rebuilds the widgets that need to change based on the new state, rather than repainting the entire application from scratch.
+**Key Insight:**
+- The `Text('$_count')` widget **rebuilds every time** the count changes
+- The buttons and layout **don't rebuild** because they're static
+- Flutter's element tree tracks which widgets need updating
+- This targeted rebuilding is why Flutter is **efficient**
+
+---
+
+### Part 3: Understanding the Reactive UI Model
+
+#### The Reactive Cycle Explained
+
+```
+1. USER INTERACTION
+   └─ User taps a button
+
+2. EVENT HANDLER
+   └─ onPressed: () { _increment(); }
+
+3. STATE MODIFICATION
+   └─ _increment() calls: setState(() { count++; })
+
+4. NOTIFICATION
+   └─ Flutter's framework detects state change
+   └─ Marks this widget as "dirty" (needs rebuild)
+
+5. BUILD PHASE
+   └─ Framework calls build() method again
+   └─ build() returns new widget tree with updated values
+
+6. ELEMENT TREE COMPARISON
+   └─ Flutter compares old and new widget trees
+   └─ Identifies which widgets actually changed
+   └─ Only rebuilds the different widgets
+
+7. RENDERING
+   └─ Updated widgets are re-rendered to screen
+   └─ User sees the change instantly
+
+8. REPEAT
+   └─ Cycle repeats for next user interaction
+```
+
+#### Why This is More Efficient Than Manual Updates
+
+**Old Approach (Imperative UI):**
+```dart
+// Manually update UI element by element
+counterText.text = newCount.toString();
+counterText.color = newColor;
+button.enabled = newState;
+// ... manually update many elements
+```
+
+**Reactive Approach (Declarative UI):**
+```dart
+// Declare what UI should look like
+Text('$count') // Flutter automatically updates when count changes
+```
+
+**Benefits of Reactive:**
+- ✅ Less boilerplate code
+- ✅ Fewer manual update bugs
+- ✅ Automatic efficient rendering
+- ✅ Clear relationship between state and UI
+
+---
+
+### Part 4: StatefulWidget vs StatelessWidget
+
+| Aspect | StatelessWidget | StatefulWidget |
+|--------|-----------------|----------------|
+| **Mutability** | Immutable - never changes | Mutable state can change |
+| **State** | No internal state | Has State class with mutable fields |
+| **Rebuilds** | Only when constructor parameters change | When setState() is called |
+| **Use Cases** | Static content, labels, icons | Forms, counters, toggles, real-time data |
+| **Overhead** | Lightweight | Slightly more overhead |
+
+#### StatefulWidget Structure
+
+```dart
+// 1. Widget class (immutable container)
+class CounterApp extends StatefulWidget {
+  const CounterApp({super.key});
+  
+  @override
+  State<CounterApp> createState() => _CounterAppState();
+}
+
+// 2. State class (holds mutable state)
+class _CounterAppState extends State<CounterApp> {
+  int count = 0; // ← Mutable state
+  
+  void increment() {
+    setState(() {
+      count++; // ← Call setState to trigger rebuild
+    });
+  }
+  
+  @override
+  Widget build(BuildContext context) {
+    return Text('Count: $count'); // ← Declares widget hierarchy
+  }
+}
+```
+
+**Why the separation?**
+- Widget class is immutable (efficient, can be reused as constants)
+- State class is mutable (holds changeable data)
+- This design pattern allows Flutter to optimize rendering
+
+---
+
+### Part 5: Running the Comprehensive Demos
+
+#### Option 1: Run Welcome Screen (Original Demo)
+```bash
+cd LiveToura
+flutter run -t lib/main_widget_tree_demo.dart
+```
+
+#### Option 2: Run Comprehensive Demo (Recommended)
+```bash
+cd LiveToura
+flutter run -t lib/widget_tree_comprehensive_demo.dart
+```
+
+**This includes 4 interactive demos:**
+1. **Profile Card** - Toggle show/hide details (state management)
+2. **Counter App** - Increment/decrement counter (reactive updates)
+3. **Color Switcher** - Change theme colors dynamically
+4. **Widget Tree Visualizer** - See the actual widget hierarchy
+
+---
+
+### Part 6: Interactive Examples in the Codebase
+
+#### 1. Profile Card Demo
+**Location:** `lib/widget_tree_comprehensive_demo.dart` → `ProfileCardDemo`
+
+**Features:**
+- Stateful toggle button
+- Conditional widget rendering
+- State-driven UI changes
+- Example of efficient rebuilding
+
+**What to Observe:**
+- Press "Show Details" - only the details column rebuilds
+- Press "Hide Details" - the column is removed from tree
+- Buttons and avatar don't change (no rebuild)
+
+#### 2. Counter App Demo
+**Location:** `lib/widget_tree_comprehensive_demo.dart` → `CounterAppDemo`
+
+**Features:**
+- Multiple buttons with different actions
+- Real-time count display
+- Reset functionality
+
+**What to Observe:**
+- Press Increment/Decrement - only the count text updates
+- The button layout stays the same
+- Fresh rendering is instant (you're seeing the reactive model)
+
+#### 3. Color Switcher Demo
+**Location:** `lib/widget_tree_comprehensive_demo.dart` → `ColorSwitcherDemo`
+
+**Features:**
+- Multiple state variables (`_primaryColor`, `_secondaryColor`)
+- All related widgets rebuild together
+
+**What to Observe:**
+- Click a color - AppBar, container, and text all update
+- Demonstrates cascading state changes through the tree
+
+#### 4. Widget Tree Visualizer
+**Location:** `lib/widget_tree_comprehensive_demo.dart` → `WidgetTreeVisualizer`
+
+**Features:**
+- Visual representation of all demo widget trees
+- Code structure shown as ASCII diagrams
+- Key concepts explained
+
+---
+
+### Part 7: How to Take Screenshots for Documentation
+
+#### Screenshots to Capture:
+
+**Screenshot 1: Initial UI State**
+```
+Run the app:
+flutter run -t lib/widget_tree_comprehensive_demo.dart
+
+Navigate to "Profile Card" demo
+Press screenshot key on your simulator/device
+Label: "Initial Profile Card (Details Hidden)"
+```
+
+**Screenshot 2: After State Change**
+```
+Click "Show Details" button
+Press screenshot key
+Label: "Profile Card After Toggle (Details Visible)"
+```
+
+**Screenshot 3: Counter App Before**
+```
+Navigate to "Counter App" demo
+Press screenshot key
+Label: "Counter App Initial State (Count = 0)"
+```
+
+**Screenshot 4: Counter App After Interactions**
+```
+Click "Increase" button several times
+Press screenshot key
+Label: "Counter App After Multiple Increments (Count = 5)"
+```
+
+**Screenshot 5: Widget Tree Visualizer**
+```
+Navigate to "Widget Tree Visualizer" demo
+Scroll to see all tree diagrams
+Press screenshot key
+Label: "Widget Tree Hierarchy Diagrams"
+```
+
+---
+
+### Part 8: Key Takeaways & Reflection
+
+#### What You Now Understand:
+
+1. **Widget Tree Structure**
+   - Everything in Flutter is a widget
+   - Widgets form a hierarchical tree
+   - Parent-child relationships determine layout
+
+2. **Reactive UI Model**
+   - setState() triggers rebuilds
+   - Only affected widgets re-render
+   - Efficient and automatic
+
+3. **When to Use StatefulWidget**
+   - When UI needs to respond to interaction
+   - When you need to update the display
+   - For forms, counters, toggles, real-time data
+
+4. **Flutter's Rendering Pipeline**
+   - Build phase: create widget tree
+   - Element tree comparison: identify changes
+   - Rendering: draw only updated widgets
+   - Composite: combine layers
+
+#### How This Applies to LiveToura:
+
+- **Real-time Score Updates**: When a score changes in Firestore, StatefulWidget will rebuild to show new data
+- **Live Leaderboards**: As players perform, their positions update reactively
+- **Player Statistics**: Stats update automatically without manual UI manipulation
+- **Match Notifications**: New match events trigger widget rebuilds
+
+---
+
+### Part 9: PR Submission Guidelines
+
+#### Commit Message
+```bash
+git add .
+git commit -m "feat: demonstrated widget tree and reactive UI model with state updates"
+```
+
+#### PR Title
+```
+[Sprint-2] Widget Tree & Reactive UI – LiveToura Team
+```
+
+#### PR Description
+```markdown
+## Summary
+Demonstrated Flutter's widget tree structure and reactive UI model with interactive examples.
+
+## Widget Hierarchy
+See DESIGN_SPEC.md for complete widget tree diagrams.
+
+## Demos Included
+- Profile Card with toggle
+- Counter App with increment/decrement
+- Color Switcher with dynamic theming
+- Widget Tree Visualizer
+
+## Screenshots
+[Attach screenshot showing initial UI state]
+[Attach screenshot showing UI after state change]
+
+## Key Learnings
+- Widget tree is hierarchical structure of all UI elements
+- setState() triggers efficient re-renders of affected widgets
+- Only widgets with changed state rebuild (performance optimization)
+- Reactive model is more efficient than manual UI manipulation
+
+## How to Test
+```bash
+flutter run -t lib/widget_tree_comprehensive_demo.dart
+```
+
+Click through different demos to see the reactive updates in action.
+
+## Video Demo
+[Link to Google Drive video - 1-2 minutes]
+Shows widget hierarchy, state changes, and reactive updates.
+```
+
+---
+
+### Part 10: Recording Your Video Demo (1-2 Minutes)
+
+**Checklist:**
+- [ ] Open the app with: `flutter run -t lib/widget_tree_comprehensive_demo.dart`
+- [ ] Demonstrate Profile Card demo - toggle details on/off
+- [ ] Explain: "When I toggle, only the details column rebuilds"
+- [ ] Navigate to Counter App
+- [ ] Press Increment button several times
+- [ ] Explain: "Only the count text rebuilds, not the buttons"
+- [ ] Navigate to Widget Tree Visualizer
+- [ ] Show the hierarchical structure
+- [ ] Explain: "This is how Flutter organizes UI elements"
+- [ ] Conclude: "The reactive model means I don't manually update UI - Flutter does it automatically"
+
+**Upload to:**
+- Google Drive (set to "Anyone with link - can view")
+- YouTube (unlisted)
+- Loom (shareable link)
+
+**Add the link to your PR description**
+
+---
 
 ### How to Run the Demo
 
-To isolate this task for verification (screenshots/video):
+To verify your understanding and see the reactive UI in action:
 
 ```bash
-flutter run -t lib/main_widget_tree_demo.dart
+flutter run -t lib/widget_tree_comprehensive_demo.dart
 ```
 
 ---
