@@ -4,6 +4,7 @@ import 'firebase_options.dart';
 import 'screens/welcome_screen.dart';
 import 'screens/responsive_home.dart';
 import 'screens/login_screen.dart';
+import 'screens/stateless_stateful_demo.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 void main() async {
