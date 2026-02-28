@@ -5,6 +5,7 @@ import 'screens/welcome_screen.dart';
 import 'screens/responsive_home.dart';
 import 'screens/login_screen.dart';
 import 'screens/stateless_stateful_demo.dart';
+import 'screens/dev_tools_demo.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 void main() async {
@@ -121,25 +122,100 @@ class LiveTouraBasicsApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    debugPrint('🚀 LiveToura App Started - Debug Console Open');
     return MaterialApp(
       title: 'LiveToura',
       theme: LiveTouraTheme.lightTheme,
-      home: StreamBuilder<User?>(
-        stream: FirebaseAuth.instance.authStateChanges(),
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.active) {
-            if (snapshot.hasData) {
-              return const ResponsiveHomeScreen();
-            } else {
-              return const LoginScreen();
-            }
-          }
-          return const Scaffold(
-            body: Center(child: CircularProgressIndicator()),
-          );
-        },
-      ),
+      home: const DemoLauncherScreen(),
       debugShowCheckedModeBanner: false,
+    );
+  }
+}
+
+/// Demo Launcher Screen - Quick access to DevTools Demo
+class DemoLauncherScreen extends StatelessWidget {
+  const DemoLauncherScreen({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('🚀 LiveToura - Development Tools Demo'),
+        elevation: 4,
+        backgroundColor: Colors.blue.shade700,
+        foregroundColor: Colors.white,
+      ),
+      body: Center(
+        child: Padding(
+          padding: const EdgeInsets.all(24.0),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(
+                Icons.flutter_dash,
+                size: 80,
+                color: Colors.blue.shade700,
+              ),
+              const SizedBox(height: 24),
+              Text(
+                'Welcome to DevTools Demo',
+                style: Theme.of(context).textTheme.headlineSmall,
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 16),
+              Text(
+                'Learn how to use Hot Reload, Debug Console, and Flutter DevTools effectively',
+                style: Theme.of(context).textTheme.bodyMedium,
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 32),
+              ElevatedButton.icon(
+                onPressed: () {
+                  debugPrint('🎯 User clicked - Navigating to DevTools Demo Screen');
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const DevToolsDemoScreen(),
+                    ),
+                  );
+                },
+                icon: const Icon(Icons.build),
+                label: const Text('Open DevTools Demo'),
+                style: ElevatedButton.styleFrom(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 32,
+                    vertical: 16,
+                  ),
+                  backgroundColor: Colors.blue.shade700,
+                  foregroundColor: Colors.white,
+                ),
+              ),
+              const SizedBox(height: 16),
+              ElevatedButton.icon(
+                onPressed: () {
+                  debugPrint('📋 User clicked - Navigating to Firebase Login');
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const LoginScreen(),
+                    ),
+                  );
+                },
+                icon: const Icon(Icons.login),
+                label: const Text('Go to Login'),
+                style: ElevatedButton.styleFrom(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 32,
+                    vertical: 16,
+                  ),
+                  backgroundColor: Colors.grey.shade600,
+                  foregroundColor: Colors.white,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
     );
   }
 }
