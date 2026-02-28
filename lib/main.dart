@@ -8,6 +8,7 @@ import 'screens/stateless_stateful_demo.dart';
 import 'screens/dev_tools_demo.dart';
 import 'screens/home_screen.dart';
 import 'screens/details_screen.dart';
+import 'screens/responsive_layout.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 void main() async {
@@ -133,6 +134,7 @@ class LiveTouraBasicsApp extends StatelessWidget {
         '/': (context) => const DemoLauncherScreen(),
         '/home': (context) => const HomeScreen(),
         '/details': (context) => const DetailsScreen(),
+        '/responsive': (context) => const ResponsiveLayout(),
       },
       debugShowCheckedModeBanner: false,
     );
@@ -217,7 +219,24 @@ class DemoLauncherScreen extends StatelessWidget {
               const SizedBox(height: 16),
               ElevatedButton.icon(
                 onPressed: () {
-                  debugPrint('📋 User clicked - Navigating to Firebase Login');
+                  debugPrint('� User clicked - Navigating to Responsive Layout Demo');
+                  Navigator.pushNamed(context, '/responsive');
+                },
+                icon: const Icon(Icons.responsive_layout),
+                label: const Text('Responsive Layout Demo'),
+                style: ElevatedButton.styleFrom(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 32,
+                    vertical: 16,
+                  ),
+                  backgroundColor: Colors.orange.shade700,
+                  foregroundColor: Colors.white,
+                ),
+              ),
+              const SizedBox(height: 16),
+              ElevatedButton.icon(
+                onPressed: () {
+                  debugPrint('�📋 User clicked - Navigating to Firebase Login');
                   Navigator.push(
                     context,
                     MaterialPageRoute(
