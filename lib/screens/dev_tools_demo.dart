@@ -50,10 +50,10 @@ class _DevToolsDemoScreenState extends State<DevToolsDemoScreen> {
     setState(() {
       _showExtraWidget = !_showExtraWidget;
       final action = _showExtraWidget ? 'shown' : 'hidden';
-      _statusMessage = 'Extra widget $_action';
+      _statusMessage = 'Extra widget $action';
       
       // Debug Console Output
-      debugPrint('🔄 Widget Toggle: Extra widget is now $_action');
+      debugPrint('🔄 Widget Toggle: Extra widget is now $action');
     });
   }
 
@@ -286,7 +286,7 @@ class _DevToolsDemoScreenState extends State<DevToolsDemoScreen> {
                             style: TextStyle(
                               fontSize: 11,
                               fontFamily: 'Courier',
-                              color: Colors.purple[900],
+                              color: Color(0xFF3F2C70),
                             ),
                           ),
                         ),
