@@ -1340,4 +1340,677 @@ Multi-screen navigation is fundamental to most mobile applications. By mastering
 
 ---
 
+## Sprint 2: Responsive Layout Design Using Rows, Columns, and Containers
+
+### Project Title: Responsive Dashboard – Adaptive UI Design
+
+The "Responsive Dashboard" demonstrates how **LiveToura** adapts its layout to different screen sizes, providing an optimal experience for mobile phones, tablets, and desktop devices. By using Flutter's core layout widgets (Container, Row, Column) combined with responsive utilities (MediaQuery, Expanded), we create a single layout that intelligently adapts to any device.
+
+### Learning Objectives
+
+By completing this task, you will understand:
+
+1. **Container Widget** - Flexible boxing model for grouping content, styling, and spacing
+2. **Row Widget** - Arranging children horizontally with alignment control
+3. **Column Widget** - Stacking children vertically with flexible sizing
+4. **MediaQuery** - Detecting screen dimensions for responsive decisions
+5. **Expanded & Flexible** - Dynamic sizing widgets that fill available space
+6. **Responsive Design Patterns** - Techniques for multi-screen adaptation
+
+### Architecture Overview
+
+#### Device Type Detection
+
+The responsive layout uses three categories:
+
+```dart
+final screenWidth = MediaQuery.of(context).size.width;
+final isMobile = screenWidth < 600;
+final isTablet = screenWidth >= 600 && screenWidth < 1024;
+final isDesktop = screenWidth >= 1024;
+```
+
+**Device Categories:**
+- **Mobile** (< 600px): Single-column stacked layout, full-width components
+- **Tablet** (600-1024px): Two-column adaptive layout, better space utilization
+- **Desktop** (≥ 1024px): Three-column layout, side panels, grid views
+
+#### Responsive Rendering Pattern
+
+```
+Mobile View:        Tablet View:         Desktop View:
+┌─────────┐         ┌─────────────┐      ┌──────────────────────┐
+│ Header  │         │  Header     │      │       Header        │
+├─────────┤         ├─────┬───────┤      ├──────┬─────┬────────┤
+│ Card 1  │         │ Card│ Card  │      │Card 1│Card2│Card 3  │
+├─────────┤         │  1  │   2   │      │      │     │        │
+│ Card 2  │         ├─────┴───────┤      └──────┴─────┴────────┘
+├─────────┤         │  Card 3     │
+│ Card 3  │         ├─────────────┤
+├─────────┤         │  Footer     │
+│ Footer  │         └─────────────┘
+└─────────┘
+```
+
+### Screens Implemented
+
+#### ResponsiveLayout Screen (`/responsive`)
+**Location:** [screens/responsive_layout.dart](lib/screens/responsive_layout.dart)
+
+**Features:**
+
+1. **Dynamic Header Section**
+   - Gradient background with adaptive height (120px on mobile, 150px on larger screens)
+   - Responsive icon and text sizing
+   - Visual feedback of current device type
+
+2. **Screen Information Display**
+   - Real-time width, height, and device type information
+   - Shows current breakpoints and adapts as you resize
+
+3. **Responsive Main Content**
+   - **Mobile Layout:** Three cards stacked vertically with full width
+   - **Tablet Layout:** Two cards in a row, one card below
+   - **Desktop Layout:** Three cards in a single row, all equally sized
+
+4. **Feature Cards**
+   - Responsive padding and spacing
+   - Color-coded cards with icons and descriptions
+   - Automatic text wrapping on smaller screens
+
+5. **Layout Techniques Showcase**
+   - Lists all techniques used (MediaQuery, Container, Row, Column, Expanded)
+   - Educational reference for responsive patterns
+
+6. **Footer Section**
+   - Adaptive padding and typography
+   - Explains current layout mode
+
+### Core Layout Widgets Explained
+
+#### 1. Container Widget
+
+The Container is the foundational layout widget—like a flexible box that can hold any content.
+
+**Basic Container:**
+```dart
+Container(
+  padding: EdgeInsets.all(16),
+  color: Colors.blue,
+  child: Text('Content inside Container'),
+)
+```
+
+**Advanced Container:**
+```dart
+Container(
+  width: double.infinity,  // Full width
+  height: 150,
+  decoration: BoxDecoration(
+    gradient: LinearGradient(
+      colors: [Colors.blue, Colors.cyan],
+    ),
+    borderRadius: BorderRadius.circular(12),
+    boxShadow: [
+      BoxShadow(
+        color: Colors.black.withOpacity(0.2),
+        blurRadius: 8,
+      ),
+    ],
+  ),
+  child: Center(child: Text('Styled Container')),
+)
+```
+
+**Container Properties:**
+- `padding`: Internal space around child
+- `margin`: External space around container
+- `width` / `height`: Explicit sizing
+- `color`: Simple background color
+- `decoration`: Complex styling (gradients, borders, shadows)
+- `child`: Single widget inside
+- `alignment`: Position child within container
+
+#### 2. Row Widget
+
+Arranges children horizontally in a single line.
+
+**Basic Row:**
+```dart
+Row(
+  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+  children: [
+    Icon(Icons.home),
+    Icon(Icons.search),
+    Icon(Icons.person),
+  ],
+)
+```
+
+**Responsive Row with Expanded:**
+```dart
+Row(
+  children: [
+    Expanded(
+      child: Container(color: Colors.blue, height: 100),
+    ),
+    SizedBox(width: 12),
+    Expanded(
+      child: Container(color: Colors.green, height: 100),
+    ),
+  ],
+)
+```
+
+**Row Alignment Properties:**
+- `mainAxisAlignment`: Horizontal positioning (start, end, center, spaceEvenly, spaceBetween)
+- `crossAxisAlignment`: Vertical alignment (start, end, center, stretch)
+- `mainAxisSize`: MainAxisSize.max (default) or MainAxisSize.min
+
+#### 3. Column Widget
+
+Arranges children vertically in a single column.
+
+**Basic Column:**
+```dart
+Column(
+  mainAxisAlignment: MainAxisAlignment.center,
+  children: [
+    Text('Welcome!'),
+    SizedBox(height: 16),
+    ElevatedButton(
+      onPressed: () {},
+      child: Text('Click Me'),
+    ),
+  ],
+)
+```
+
+**Responsive Column with Expanded:**
+```dart
+Column(
+  children: [
+    Container(height: 100, color: Colors.blue), // Fixed height
+    SizedBox(height: 12),
+    Expanded(
+      child: Container(color: Colors.green), // Fills remaining space
+    ),
+  ],
+)
+```
+
+**Column Alignment Properties:**
+- `mainAxisAlignment`: Vertical positioning (start, end, center, spaceEvenly, spaceBetween)
+- `crossAxisAlignment`: Horizontal alignment (start, end, center, stretch)
+- `mainAxisSize`: MainAxisSize.max (default) or MainAxisSize.min
+
+### Making Layouts Responsive
+
+#### Technique 1: MediaQuery for Screen Detection
+
+```dart
+final screenWidth = MediaQuery.of(context).size.width;
+final screenHeight = MediaQuery.of(context).size.height;
+final isMobile = screenWidth < 600;
+
+Container(
+  width: isMobile ? double.infinity : 500,
+  padding: EdgeInsets.all(isMobile ? 12 : 24),
+  child: Text('Responsive width and padding'),
+)
+```
+
+#### Technique 2: Expanded for Flexible Sizing
+
+```dart
+Row(
+  children: [
+    Expanded(
+      flex: 2,  // Takes 2/3 of space
+      child: Container(color: Colors.red, height: 100),
+    ),
+    Expanded(
+      flex: 1,  // Takes 1/3 of space
+      child: Container(color: Colors.blue, height: 100),
+    ),
+  ],
+)
+```
+
+#### Technique 3: Flexible Widgets
+
+```dart
+Row(
+  children: [
+    Flexible(
+      fit: FlexFit.tight,  // Fills available space
+      child: TextField(),
+    ),
+    SizedBox(width: 12),
+    ElevatedButton(onPressed: () {}, child: Text('Send')),
+  ],
+)
+```
+
+#### Technique 4: SingleChildScrollView for Overflow Prevention
+
+```dart
+SingleChildScrollView(
+  child: Column(
+    children: [
+      // Many widgets that might overflow
+    ],
+  ),
+)
+```
+
+### Project Structure
+
+```
+lib/
+├── main.dart                          # App entry point with routes
+├── screens/
+│   ├── home_screen.dart              # Navigation hub
+│   ├── details_screen.dart           # Multi-screen demo
+│   └── responsive_layout.dart        # ✨ NEW - Responsive design
+├── models/
+├── services/
+└── widgets/
+```
+
+### Testing Responsive Layout
+
+#### Method 1: Using the Flutter Emulator
+
+**Test on Phone:**
+```bash
+# Run on Android emulator (Pixel 5 - ~410px width)
+flutter run
+```
+
+**Test on Tablet:**
+```bash
+# In Android Studio:
+# - Tools → AVD Manager
+# - Create new emulator with Pixel C (Table - ~768px width)
+# - Run: flutter run
+```
+
+**Test on Desktop (if configured):**
+```bash
+# Windows
+flutter run -d windows
+
+# macOS
+flutter run -d macos
+```
+
+#### Method 2: Device Testing
+
+**Push APK to Android Device:**
+```bash
+flutter build apk
+flutter install
+```
+
+**Run on iOS Device:**
+```bash
+flutter run -d <device-id>
+```
+
+#### Method 3: Browser Testing (Web Version)
+
+```bash
+flutter run -d web-server
+# Open http://localhost:8000 in browser
+# Resize browser window to see responsive changes
+```
+
+#### Method 4: Manual Testing with Build Configurations
+
+Use `flutter run --help` to explore other testing options.
+
+### What to Test
+
+✅ **Mobile View (< 600px):**
+- [ ] Cards stack vertically
+- [ ] Padding is reduced (12px instead of 16px)
+- [ ] Text is readable at reduced sizes
+- [ ] No horizontal overflow
+- [ ] All touch targets are ≥ 48x48px
+
+✅ **Tablet View (600-1024px):**
+- [ ] Two-column layout appears
+- [ ] Cards resize to fill columns evenly
+- [ ] Spacing increases to 16px padding
+- [ ] Good use of screen width
+- [ ] Layout feels balanced
+
+✅ **Desktop View (≥ 1024px):**
+- [ ] Three-column layout appears
+- [ ] Cards arranged horizontally
+- [ ] Padding increases to 20px+
+- [ ] Maximum content width is respected
+- [ ] Full screen space utilized
+
+### Code Snippets from ResponsiveLayout
+
+#### Detecting Device Type
+
+```dart
+final screenWidth = MediaQuery.of(context).size.width;
+final isMobile = screenWidth < 600;
+final isTablet = screenWidth >= 600 && screenWidth < 1024;
+final isDesktop = screenWidth >= 1024;
+
+debugPrint('📱 Screen Size: ${screenWidth}');
+debugPrint('Device Type: ${isMobile ? "Mobile" : isTablet ? "Tablet" : "Desktop"}');
+```
+
+#### Adaptive Padding
+
+```dart
+Container(
+  padding: EdgeInsets.all(isMobile ? 12 : isTablet ? 16 : 20),
+  child: // content
+)
+```
+
+#### Conditional Layouts
+
+```dart
+if (isMobile) {
+  // Single-column mobile layout
+  _buildMobileLayout(context)
+} else if (isTablet) {
+  // Two-column tablet layout
+  _buildTabletLayout(context)
+} else {
+  // Three-column desktop layout
+  _buildDesktopLayout(context)
+}
+```
+
+### Best Practices for Responsive Design
+
+1. **Start Mobile-First**
+   - Design for smallest screens first
+   - Add complexity for larger screens
+   - Ensures core functionality works everywhere
+
+2. **Use Breakpoints**
+   - Mobile: < 600px
+   - Tablet: 600-1024px
+   - Desktop: ≥ 1024px
+   - Adjust based on your app's needs
+
+3. **Test on Real Devices**
+   - Emulators don't always match real behavior
+   - Different apps have different needs
+   - Touch targets should be ≥ 48x48 pixels
+
+4. **Avoid Magic Numbers**
+   ```dart
+   // Bad
+   padding: EdgeInsets.all(16);
+   
+   // Good
+   const double defaultPadding = 16;
+   const double mobilePadding = 12;
+   padding: EdgeInsets.all(isMobile ? mobilePadding : defaultPadding);
+   ```
+
+5. **Use SizedBox for Spacing**
+   ```dart
+   Column(
+     children: [
+       Text('Title'),
+       SizedBox(height: isMobile ? 8 : 16),  // Responsive spacing
+       Text('Description'),
+     ],
+   )
+   ```
+
+6. **Respect Safe Areas**
+   ```dart
+   SafeArea(
+     child: // content, avoids notches and system UIs
+   )
+   ```
+
+### Reflection Questions
+
+**1. Why is responsiveness important in mobile apps?**
+- Users access apps on diverse devices (phones, tablets, foldables)
+- Good responsive design provides an optimal experience for everyone
+- Poor responsiveness leads to unusable layouts on certain devices
+- Market reach: support more devices = more potential users
+
+**2. What challenges did you face while managing layout proportions?**
+- Deciding where to place breakpoints (600px vs 640px?)
+- Balancing mobile simplicity with desktop richness
+- Testing on multiple screen sizes
+- Handling text wrapping and overflow
+- Touch target sizing for mobile vs desktop
+
+**3. How can you improve your layout for different screen orientations?**
+- Use `MediaQuery.of(context).orientation` to detect portrait/landscape
+- Change layout based on orientation:
+  ```dart
+  if (MediaQuery.of(context).orientation == Orientation.portrait) {
+    // Single column
+  } else {
+    // Multiple columns
+  }
+  ```
+- Test landscape mode on devices
+- Ensure layouts look good both ways
+
+### Demo Features
+
+The Responsive Layout demo includes:
+
+✨ **Interactive Header**
+- Dynamic sizing based on screen width
+- Gradient background
+- Current device type display
+
+✨ **Screen Metrics Display**
+- Real-time width and height
+- Device type indicator
+- Helps understand responsive behavior
+
+✨ **Three Different Layouts**
+- Mobile: Vertical card stack
+- Tablet: Two-column with third card below
+- Desktop: Three-column horizontal layout
+
+✨ **Feature Showcase**
+- Lists all layout techniques used
+- Educational reference
+- Technical details explained
+
+### Submission Guidelines
+
+#### Create a Git Branch
+```bash
+git checkout -b feature/responsive-layout
+```
+
+#### Commit Your Work
+```bash
+git add lib/screens/responsive_layout.dart lib/main.dart README.md
+git commit -m "feat: designed responsive layout using rows, columns, and containers
+
+- Created ResponsiveLayout screen with three device-type specific layouts
+- Implemented mobile (< 600px), tablet (600-1024px), and desktop (≥ 1024px) views
+- Used MediaQuery for screen detection and dynamic adaptation
+- Added Expanded widget for flexible spacing
+- Comprehensive documentation with techniques and best practices
+- Added responsive layout demo to launcher screen"
+```
+
+#### Push to GitHub
+```bash
+git push -u origin feature/responsive-layout
+```
+
+#### Create a Pull Request
+
+**PR Title:**
+```
+[Sprint-2] Responsive Layout Design – LiveToura Team
+```
+
+**PR Description:**
+```markdown
+## Summary
+Implemented a fully responsive layout system that adapts to mobile, tablet, and desktop screens using Flutter's core layout widgets (Container, Row, Column) and responsive utilities (MediaQuery, Expanded).
+
+## Implementation Details
+
+### Screens Created
+- `lib/screens/responsive_layout.dart` - Complete responsive dashboard
+
+### Layout Approaches
+- **Mobile View:** Single-column vertical stack (< 600px)
+- **Tablet View:** Two-column adaptive layout (600-1024px)
+- **Desktop View:** Three-column horizontal layout (≥ 1024px)
+
+### Techniques Used
+1. **MediaQuery** - Screen size detection and device type classification
+2. **Container** - Styling, padding, and layout grouping
+3. **Row** - Horizontal arrangement with Expanded children
+4. **Column** - Vertical stacking with flexible sizing
+5. **Expanded** - Dynamic proportional space filling
+6. **SizedBox** - Consistent spacing and gaps
+
+### Key Features
+- ✅ Real-time screen metrics display
+- ✅ Adaptive padding and spacing
+- ✅ Responsive typography
+- ✅ Three distinct layout modes
+- ✅ Shadow and gradient effects
+- ✅ Feature technique showcase
+- ✅ Debug logging for screen detection
+
+## Testing
+
+### How to Test
+Run the responsive layout demo:
+```bash
+flutter run
+# Navigate to "Responsive Layout Demo" button on launcher screen
+```
+
+### Test Checklist
+- [ ] Test on phone emulator (< 600px) - stacked cards
+- [ ] Test on tablet emulator (≥ 600px) - multi-column layout
+- [ ] Rotate device to landscape - layout adapts
+- [ ] Test on different screen sizes - breakpoints trigger correctly
+- [ ] No overflow or text clipping
+- [ ] Touch targets are size-appropriate for each screen
+
+## Screenshots
+[Screenshot 1: Mobile view with stacked cards]
+[Screenshot 2: Tablet view with two-column layout]
+[Screenshot 3: Desktop view with three-column layout]
+[Screenshot 4: Screen metrics display]
+
+## Reflection
+
+### Why is responsiveness important?
+- Billions of mobile devices with different screen sizes exist
+- Good responsive design provides optimal UX on every device
+- Poor responsiveness limits market reach and user satisfaction
+- Professional apps must support multiple form factors
+
+### Challenges Addressed
+1. **Challenge:** Deciding breakpoints
+   **Solution:** Used standard web breakpoints (600px, 1024px) adapted for mobile
+
+2. **Challenge:** Managing multiple layout versions
+   **Solution:** Extracted common widgets, used conditional rendering
+
+3. **Challenge:** Text scaling across devices
+   **Solution:** Used theme styles with platform defaults, tested readability
+
+### Future Improvements
+- Add landscape orientation handling
+- Support for foldable devices
+- Animation transitions between layouts
+- Accessibility considerations (tap target sizes)
+- Dark mode responsive colors
+
+## Video Demo
+[Link to Google Drive / YouTube / Loom video]
+Duration: 1-2 minutes
+Shows:
+- Responsive layout on different screen sizes
+- How cards adapt to available width
+- Explanation of Row, Column, Container usage
+- MediaQuery breakpoint detection
+
+## Resources Used
+- Flutter Layout Documentation
+- MediaQuery API Reference
+- Material Design Responsive Guidelines
+```
+
+### Recording Your Demo Video (1-2 Minutes)
+
+**Checklist:**
+- [ ] Open the app: `flutter run`
+- [ ] Tap "Responsive Layout Demo" button
+- [ ] **Show mobile view:**
+  - Explain: "On phones (< 600px), we stack cards vertically"
+  - Show three cards in a column
+  - Explain padding is reduced for mobile
+- [ ] **Show tablet view:**
+  - Use Android emulator with tablet skin (or resize window)
+  - Explain: "On tablets (600-1024px), we use two columns"
+  - Show two cards side-by-side with one below
+- [ ] **Show desktop view:**
+  - Resize window or use desktop emulator (≥ 1024px)
+  - Explain: "On desktop, we use three columns efficiently"
+  - Show all three cards in a row
+- [ ] **Explain techniques:**
+  - Point to MediaQuery code: "We detect screen width..."
+  - Point to Row/Column: "We use Row and Column to arrange widgets..."
+  - Point to Expanded: "Expanded makes children share space proportionally..."
+- [ ] **Show metrics display:**
+  - Explain: "This shows real-time width, height, and device type"
+  - Resize to show values changing
+- [ ] **Conclude:**
+  - "With these techniques, one Flutter layout works on phones, tablets, and desktops!"
+
+**Upload To:**
+- Google Drive (set to "Anyone with link can view")
+- YouTube (unlisted or public)
+- Loom (unlisted with shareable link)
+
+**Add link to PR description**
+
+---
+
+## Conclusion
+
+Responsive layout design is now a critical skill for Flutter developers. By mastering Container, Row, Column, MediaQuery, and Expanded, you can build layouts that adapt beautifully to any device. This forms the foundation for professional, scalable mobile applications that provide excellent user experience across the entire device spectrum.
+
+**Key Takeaways:**
+- Container groups and styles content
+- Row arranges horizontally, Column arranges vertically
+- MediaQuery detects screen dimensions for responsive decisions
+- Expanded and Flexible make widgets share space proportionally
+- Test on multiple device sizes to ensure quality
+
+**Next Steps:**
+- Explore advanced responsive patterns (NavigationRail, AdaptiveNavigation)
+- Learn responsive image handling
+- Implement custom breakpoints for your app
+- Add animation to layout transitions
+- Study Material 3 responsive guidelines
+
+---
+
 `````
