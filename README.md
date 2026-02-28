@@ -1086,3 +1086,258 @@ Firebase handles the backend infrastructure, allowing the app to scale from 10 t
 ### Screenshots
 *(Add screenshots of Signup, Login, and Authenticated Dashboard here)*
 
+---
+
+## Sprint 2: Multi-Screen Navigation Using Navigator and Named Routes
+
+### Overview
+This sprint implements multi-screen navigation in the LiveToura app using Flutter's Navigator class and named routes. The navigation system allows seamless movement between different screens while maintaining the application's state and providing a clear, scalable routing structure.
+
+### Learning Objectives
+By completing this sprint, you will understand:
+
+1. **Flutter's Navigation Stack Model** - How screens are managed in a LIFO (Last In, First Out) stack
+2. **Navigator Operations** - Using `Navigator.push()`, `Navigator.pop()`, `Navigator.pushNamed()`
+3. **Named Routes** - Defining and managing routes in `MaterialApp` for scalable navigation
+4. **Data Passing Between Screens** - Using arguments to communicate across screens
+5. **Best Practices** - Organizing screens in a modular folder structure
+
+### Architecture
+
+#### Navigation Stack Model
+Flutter manages screens using a navigation stack. When you navigate to a new screen with `push()`, it's added to the top of the stack. When you use `pop()`, the top screen is removed, returning to the previous one.
+
+```
+Initial State:     After push('/home'):    After push('/details'):    After pop():
+┌─────────┐        ┌─────────┐            ┌──────────┐                ┌─────────┐
+│ Launcher│        │  Details│            │ Details  │                │  Home   │
+├─────────┤        ├─────────┤            ├──────────┤                ├─────────┤
+│         │   →    │  Home   │      →     │  Home    │         →      │         │
+├─────────┤        ├─────────┤            ├──────────┤                ├─────────┤
+│Launcher │        │Launcher │            │ Launcher │                │Launcher │
+└─────────┘        └─────────┘            └──────────┘                └─────────┘
+```
+
+### Screens Implemented
+
+#### 1. **HomeScreen** (`/home`)
+- **Purpose:** The primary entry point for the multi-screen navigation demo
+- **Features:**
+  - Displays welcome message and navigation instructions
+  - Beautiful UI with large icon and descriptive text
+  - Button to navigate to Details Screen using named route
+- **File:** [screens/home_screen.dart](lib/screens/home_screen.dart)
+
+```dart
+// Navigating using named routes
+Navigator.pushNamed(context, '/details');
+```
+
+#### 2. **DetailsScreen** (`/details`)
+- **Purpose:** Demonstrates navigation and data passing between screens
+- **Features:**
+  - Displays details and information
+  - Back button using `Navigator.pop()` to return to Home
+  - Support for receiving arguments from the previous screen
+  - Shows passed data in a highlighted container
+- **File:** [screens/details_screen.dart](lib/screens/details_screen.dart)
+
+```dart
+// Receiving data from previous screen
+final message = ModalRoute.of(context)?.settings.arguments as String?;
+```
+
+### Route Configuration in main.dart
+
+The `MaterialApp` widget is configured with named routes for centralized navigation management:
+
+```dart
+class LiveTouraBasicsApp extends StatelessWidget {
+  const LiveTouraBasicsApp({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      title: 'LiveToura',
+      theme: LiveTouraTheme.lightTheme,
+      initialRoute: '/',  // Starting screen
+      routes: {
+        '/': (context) => const DemoLauncherScreen(),
+        '/home': (context) => const HomeScreen(),
+        '/details': (context) => const DetailsScreen(),
+      },
+      debugShowCheckedModeBanner: false,
+    );
+  }
+}
+```
+
+**Key Properties:**
+- `initialRoute: '/'` - Defines the starting screen when the app launches
+- `routes: {}` - Maps route names (strings) to widget builders
+- Named routes provide a centralized, maintainable routing system
+
+### Navigation Methods
+
+#### Method 1: Named Routes (Recommended for larger apps)
+```dart
+// Navigate to a screen
+Navigator.pushNamed(context, '/details');
+
+// Navigate with arguments
+Navigator.pushNamed(
+  context,
+  '/details',
+  arguments: 'Hello from Home!',
+);
+
+// Go back to previous screen
+Navigator.pop(context);
+
+// Navigate and remove current screen
+Navigator.pushReplacementNamed(context, '/home');
+```
+
+#### Method 2: Direct Navigation (Push)
+```dart
+Navigator.push(
+  context,
+  MaterialPageRoute(
+    builder: (context) => const DetailsScreen(),
+  ),
+);
+```
+
+#### Method 3: Material Page Route
+```dart
+Navigator.pushNamed(
+  context,
+  '/details',
+  arguments: {'userId': 123, 'name': 'John'},
+);
+```
+
+### Passing Data Between Screens
+
+#### From Home to Details
+```dart
+// In HomeScreen
+Navigator.pushNamed(
+  context,
+  '/details',
+  arguments: 'Data to pass',
+);
+```
+
+#### Receiving Data in DetailsScreen
+```dart
+// In DetailsScreen.build()
+final message = ModalRoute.of(context)?.settings.arguments as String?;
+
+// Use the data
+Text(message ?? 'No data received')
+```
+
+### Project Structure
+
+```
+lib/
+├── main.dart                    # App entry point with route configuration
+├── screens/
+│   ├── home_screen.dart        # First screen
+│   ├── details_screen.dart     # Second screen
+│   ├── dev_tools_demo.dart
+│   ├── login_screen.dart
+│   ├── welcome_screen.dart
+│   └── ... (other screens)
+├── models/
+├── services/
+└── widgets/
+```
+
+### Implementation Guidelines
+
+#### Step 1: Create Screen Files
+- Create `home_screen.dart` and `details_screen.dart` in the `screens/` folder
+- Each screen extends `StatelessWidget` for simplicity (or `StatefulWidget` if needed)
+- Use `Scaffold` for consistent Material Design layout
+
+#### Step 2: Define Routes in main.dart
+- Add imports for new screens
+- Update `MaterialApp` with `initialRoute` and `routes`
+- Each route maps a string path to a widget builder
+
+#### Step 3: Implement Navigation
+- Use `Navigator.pushNamed(context, '/route-name')` to navigate
+- Use `Navigator.pop(context)` to go back
+- Pass data using the `arguments` parameter
+
+#### Step 4: Test Navigation Flow
+- Launch the app and verify the initial route loads
+- Test all navigation buttons
+- Confirm back navigation works correctly
+- Test data passing if implemented
+
+### Best Practices
+
+1. **Use Named Routes** - For apps with multiple screens, named routes are cleaner and more maintainable
+2. **Centralize Route Definitions** - Define all routes in `main.dart` for easy reference
+3. **Keep Screens Modular** - Each screen should be independent and reusable
+4. **Use Arguments Sparingly** - Pass only necessary data between screens
+5. **Handle Navigation Safely** - Always check for null arguments
+6. **Organize Screens Folder** - Group related screens in subfolders if the app grows
+
+### Demo Features
+
+The app includes a launcher screen with buttons to access:
+- **DevTools Demo** - Flutter debugging and development tools
+- **Multi-Screen Navigation Demo** - Navigate to home screen with named routes
+- **Login Screen** - Firebase authentication demo
+
+### Testing Checklist
+
+- [ ] App launches and shows DemoLauncherScreen
+- [ ] "Multi-Screen Navigation Demo" button navigates to HomeScreen using `/home` route
+- [ ] "Go to Details Screen" button navigates to DetailsScreen using `/details` route
+- [ ] "Back to Home" button returns to HomeScreen
+- [ ] Navigation transitions are smooth
+- [ ] No console errors during navigation
+- [ ] Data passing works if arguments are used
+- [ ] Back gesture (Android) works correctly
+- [ ] AppBar updates correctly on each screen
+
+### Reflection Questions
+
+1. **How does the Navigator manage the app's screen stack?**
+   - The Navigator maintains a stack of routes. When you push a route, it's added to the top. When you pop, the top route is removed and the previous one is visible.
+
+2. **What are the benefits of using named routes in larger applications?**
+   - Named routes provide a centralized routing system that's easy to maintain and refactor
+   - They improve readability and make the navigation structure transparent
+   - They prevent hardcoding widget instantiation throughout the app
+   - They support deep linking and URL-based navigation
+
+3. **How does Flutter's navigation differ from web browser navigation?**
+   - Flutter uses a stack-based model similar to native mobile apps
+   - Named routes work like URLs but for native apps
+   - Flutter handles platform-specific back button behavior automatically
+
+4. **What are potential scalability issues and how to address them?**
+   - **Issue:** Routes file becomes large
+   - **Solution:** Organize routes into modules or feature-based files
+   - **Issue:** Complex state management across screens
+   - **Solution:** Use Provider, BLoC, or other state management solutions
+
+### Conclusion
+
+Multi-screen navigation is fundamental to most mobile applications. By mastering named routes and the Navigator API, you've set the foundation for building scalable, maintainable Flutter apps. This architecture supports adding hundreds of screens while keeping the codebase organized and easy to navigate.
+
+**Next Steps:**
+- Explore advanced navigation patterns (nested navigation, deep linking)
+- Implement state management to persist data across screen transitions
+- Add animations to navigation transitions
+- Create feature-based route organization for larger projects
+
+---
+
+`````

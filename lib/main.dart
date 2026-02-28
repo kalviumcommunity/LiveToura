@@ -6,6 +6,8 @@ import 'screens/responsive_home.dart';
 import 'screens/login_screen.dart';
 import 'screens/stateless_stateful_demo.dart';
 import 'screens/dev_tools_demo.dart';
+import 'screens/home_screen.dart';
+import 'screens/details_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 void main() async {
@@ -126,7 +128,12 @@ class LiveTouraBasicsApp extends StatelessWidget {
     return MaterialApp(
       title: 'LiveToura',
       theme: LiveTouraTheme.lightTheme,
-      home: const DemoLauncherScreen(),
+      initialRoute: '/',
+      routes: {
+        '/': (context) => const DemoLauncherScreen(),
+        '/home': (context) => const HomeScreen(),
+        '/details': (context) => const DetailsScreen(),
+      },
       debugShowCheckedModeBanner: false,
     );
   }
@@ -187,6 +194,23 @@ class DemoLauncherScreen extends StatelessWidget {
                     vertical: 16,
                   ),
                   backgroundColor: Colors.blue.shade700,
+                  foregroundColor: Colors.white,
+                ),
+              ),
+              const SizedBox(height: 16),
+              ElevatedButton.icon(
+                onPressed: () {
+                  debugPrint('🏠 User clicked - Navigating to Multi-Screen Navigation Demo');
+                  Navigator.pushNamed(context, '/home');
+                },
+                icon: const Icon(Icons.navigation),
+                label: const Text('Multi-Screen Navigation Demo'),
+                style: ElevatedButton.styleFrom(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 32,
+                    vertical: 16,
+                  ),
+                  backgroundColor: Colors.green.shade700,
                   foregroundColor: Colors.white,
                 ),
               ),
