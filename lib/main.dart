@@ -9,6 +9,7 @@ import 'screens/dev_tools_demo.dart';
 import 'screens/home_screen.dart';
 import 'screens/details_screen.dart';
 import 'screens/responsive_layout.dart';
+import 'screens/scrollable_views.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 void main() async {
@@ -135,6 +136,7 @@ class LiveTouraBasicsApp extends StatelessWidget {
         '/home': (context) => const HomeScreen(),
         '/details': (context) => const DetailsScreen(),
         '/responsive': (context) => const ResponsiveLayout(),
+        '/scrollable': (context) => const ScrollableViews(),
       },
       debugShowCheckedModeBanner: false,
     );
@@ -222,7 +224,7 @@ class DemoLauncherScreen extends StatelessWidget {
                   debugPrint('� User clicked - Navigating to Responsive Layout Demo');
                   Navigator.pushNamed(context, '/responsive');
                 },
-                icon: const Icon(Icons.responsive_layout),
+                icon: const Icon(Icons.dashboard_customize),
                 label: const Text('Responsive Layout Demo'),
                 style: ElevatedButton.styleFrom(
                   padding: const EdgeInsets.symmetric(
@@ -236,7 +238,24 @@ class DemoLauncherScreen extends StatelessWidget {
               const SizedBox(height: 16),
               ElevatedButton.icon(
                 onPressed: () {
-                  debugPrint('�📋 User clicked - Navigating to Firebase Login');
+                  debugPrint('📜 User clicked - Navigating to Scrollable Views Demo');
+                  Navigator.pushNamed(context, '/scrollable');
+                },
+                icon: const Icon(Icons.view_agenda),
+                label: const Text('Scrollable Views Demo'),
+                style: ElevatedButton.styleFrom(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 32,
+                    vertical: 16,
+                  ),
+                  backgroundColor: Colors.deepPurple.shade700,
+                  foregroundColor: Colors.white,
+                ),
+              ),
+              const SizedBox(height: 16),
+              ElevatedButton.icon(
+                onPressed: () {
+                  debugPrint('🔐📋 User clicked - Navigating to Firebase Login');
                   Navigator.push(
                     context,
                     MaterialPageRoute(
