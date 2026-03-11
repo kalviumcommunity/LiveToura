@@ -10,6 +10,7 @@ import 'screens/home_screen.dart';
 import 'screens/details_screen.dart';
 import 'screens/responsive_layout.dart';
 import 'screens/scrollable_views.dart';
+import 'services/auth_service.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 void main() async {
@@ -96,7 +97,7 @@ class LiveTouraTheme {
 
 // ==================== Responsive Utilities ====================
 
-class ResponsiveLayout {
+class ResponsiveUtils {
   static bool isMobile(BuildContext context) =>
       MediaQuery.of(context).size.width < 600;
 
@@ -130,15 +131,30 @@ class LiveTouraBasicsApp extends StatelessWidget {
     return MaterialApp(
       title: 'LiveToura',
       theme: LiveTouraTheme.lightTheme,
-      initialRoute: '/',
-      routes: {
-        '/': (context) => const DemoLauncherScreen(),
-        '/home': (context) => const HomeScreen(),
-        '/details': (context) => const DetailsScreen(),
-        '/responsive': (context) => const ResponsiveLayout(),
-        '/scrollable': (context) => const ScrollableViews(),
-      },
       debugShowCheckedModeBanner: false,
+      home: StreamBuilder<User?>(
+        stream: AuthService().authStateChanges,
+        builder: (context, snapshot) {
+          // If still loading, show splash screen
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Scaffold(
+              body: Center(
+                child: CircularProgressIndicator(),
+              ),
+            );
+          }
+
+          // If user is logged in, show Dashboard
+          if (snapshot.hasData && snapshot.data != null) {
+            debugPrint('✅ User authenticated: ${snapshot.data!.email}');
+            return const ResponsiveHomeScreen();
+          }
+
+          // Otherwise show Login screen
+          debugPrint('❌ No user logged in - showing login screen');
+          return const LoginScreen();
+        },
+      ),
     );
   }
 }

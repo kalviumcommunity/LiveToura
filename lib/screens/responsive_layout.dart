@@ -19,7 +19,7 @@ class ResponsiveLayout extends StatelessWidget {
       appBar: AppBar(
         title: const Text('Responsive Layout Design'),
         elevation: 4,
-        backgroundColor: Colors.deepBlue,
+        backgroundColor: Colors.blue,
         foregroundColor: Colors.white,
       ),
       body: SingleChildScrollView(
@@ -33,7 +33,7 @@ class ResponsiveLayout extends StatelessWidget {
                 height: isMobile ? 120 : 150,
                 decoration: BoxDecoration(
                   gradient: LinearGradient(
-                    colors: [Colors.deepBlue, Colors.lightBlueAccent],
+                    colors: [Colors.blue, Colors.lightBlueAccent],
                     begin: Alignment.topLeft,
                     end: Alignment.bottomRight,
                   ),
@@ -173,7 +173,7 @@ class ResponsiveLayout extends StatelessWidget {
           title: 'Feature 1: Responsive',
           description: 'This layout adapts to your screen size automatically.',
           color: Colors.blue,
-          icon: Icons.responsive_layout,
+          icon: Icons.dashboard,
         ),
         const SizedBox(height: 12),
 
@@ -211,7 +211,7 @@ class ResponsiveLayout extends StatelessWidget {
                 title: 'Feature 1',
                 description: 'Responsive Design',
                 color: Colors.blue,
-                icon: Icons.responsive_layout,
+                icon: Icons.dashboard,
               ),
             ),
             const SizedBox(width: 12),
@@ -248,7 +248,7 @@ class ResponsiveLayout extends StatelessWidget {
             title: 'Feature 1',
             description: 'Responsive\nDesign',
             color: Colors.blue,
-            icon: Icons.responsive_layout,
+            icon: Icons.dashboard,
           ),
         ),
         const SizedBox(width: 16),
