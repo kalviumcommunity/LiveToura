@@ -4,6 +4,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import '../services/firestore_service.dart';
 import 'login_screen.dart';
 import 'stateless_stateful_demo.dart';
+import 'live_score_demo.dart';
 
 class ResponsiveHomeScreen extends StatelessWidget {
   const ResponsiveHomeScreen({super.key});
@@ -61,6 +62,17 @@ class ResponsiveHomeScreen extends StatelessWidget {
                 onPressed: () {
                   Navigator.of(context).push(
                     MaterialPageRoute(builder: (_) => const StatelessStatefulDemoScreen()),
+                  );
+                },
+              ),
+              IconButton(
+                icon: const Icon(Icons.live_tv, color: Colors.white),
+                tooltip: 'Live Score Demo',
+                onPressed: () {
+                  Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (_) => const LiveScoreDemoScreen(),
+                    ),
                   );
                 },
               ),
